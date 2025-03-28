@@ -17,8 +17,10 @@ struct EntryFieldView: View {
 			HStack {
 				if isSecure {
 					SecureField(placeHolder, text: $field).autocapitalization(.none)
+						.frame(height: 20)
 				} else {
 					TextField(placeHolder, text: $field).autocapitalization(.none)
+						.frame(height: 20)
 				}
 			}.padding()
 				.background(Color(UIColor.secondarySystemBackground))
