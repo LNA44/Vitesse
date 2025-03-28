@@ -76,6 +76,7 @@ struct VitesseService {
 	enum addCandidateToFavoritesError: Error {
 		case badURL
 		case missingToken
+		case notAdminToken
 		case noData
 		case requestFailed(String)
 		case serverError(Int)
@@ -134,7 +135,7 @@ struct VitesseService {
 		return token
 	}
 	
-	func register(email: String, password: String, firstName: String, lastName: String, baseURLString: String) async throws -> Void {
+	func register(email: String, password: String, firstName: String, lastName: String) async throws -> Void {
 		guard let baseURL = URL(string: baseURLString) else {
 			throw RegisterError.badURL
 		}
@@ -389,7 +390,12 @@ struct VitesseService {
 		guard let token = keychain.retrieveToken(key: "authToken") else {
 			throw addCandidateToFavoritesError.missingToken
 		}
+		let isAdmin = VitesseDecodageToken().decodeToken(token: token)
+		if isAdmin == false {
+			throw addCandidateToFavoritesError.notAdminToken
+		}
 		request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+			
 		
 		//lancement appel réseau
 		let (data, response) = try await executeDataRequest(request)

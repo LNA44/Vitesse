@@ -30,7 +30,12 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		F36E3DFB2D8C81BC00958B36 /* Vitesse */ = {
+		F35BFAD62D8DC65100BCDE3C /* Model */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Model;
+			sourceTree = "<group>";
+		};
+		F35BFAF22D8DC66400BCDE3C /* Vitesse */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = Vitesse;
 			sourceTree = "<group>";
@@ -38,11 +43,6 @@
 		F36E3E0C2D8C81BD00958B36 /* VitesseTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = VitesseTests;
-			sourceTree = "<group>";
-		};
-		F36E3E162D8C81BD00958B36 /* VitesseUITests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = VitesseUITests;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -75,9 +75,9 @@
 		F36E3DF02D8C81BC00958B36 = {
 			isa = PBXGroup;
 			children = (
-				F36E3DFB2D8C81BC00958B36 /* Vitesse */,
+				F35BFAF22D8DC66400BCDE3C /* Vitesse */,
+				F35BFAD62D8DC65100BCDE3C /* Model */,
 				F36E3E0C2D8C81BD00958B36 /* VitesseTests */,
-				F36E3E162D8C81BD00958B36 /* VitesseUITests */,
 				F36E3DFA2D8C81BC00958B36 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -108,7 +108,8 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				F36E3DFB2D8C81BC00958B36 /* Vitesse */,
+				F35BFAD62D8DC65100BCDE3C /* Model */,
+				F35BFAF22D8DC66400BCDE3C /* Vitesse */,
 			);
 			name = Vitesse;
 			packageProductDependencies = (
@@ -152,9 +153,6 @@
 			);
 			dependencies = (
 				F36E3E152D8C81BD00958B36 /* PBXTargetDependency */,
-			);
-			fileSystemSynchronizedGroups = (
-				F36E3E162D8C81BD00958B36 /* VitesseUITests */,
 			);
 			name = VitesseUITests;
 			packageProductDependencies = (

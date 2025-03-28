@@ -8,21 +8,22 @@
 import Foundation
 
 class VitesseDecodageToken: ObservableObject {
-	let token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQHZpdGVzc2UuY29tIiwiaXNBZG1pbiI6dHJ1ZX0.J83TqjxRzmuDuruBChNT8sMg5tfRi5iQ6tUlqJb3M9U"
-
-	// Décoder la partie Payload du JWT
-	let components = token.split(separator: ".")
-	if components.count == 3 {
-		let payloadBase64 = components[1]
-		if let decodedData = Data(base64Encoded: String(payloadBase64)) {
-			if let json = try? JSONSerialization.jsonObject(with: decodedData, options: []) as? [String: Any],
-			   let isAdmin = json["isAdmin"] as? Bool {
-				if isAdmin {
-					print("L'utilisateur est un administrateur")
-				} else {
-					print("L'utilisateur n'est pas un administrateur")
-				}
-			}
+	@Published var userIsAdmin: Bool = false
+	
+	func decodeToken(token: String) -> Bool {
+		// Décoder la partie Payload du JWT
+		let components = token.split(separator: ".")
+		guard components.count == 3 else {
+			return false
 		}
+		let payloadBase64 = components[1]
+		guard let decodedData = Data(base64Encoded: String(payloadBase64)) else {
+			return false
+		}
+		guard let json = try? JSONSerialization.jsonObject(with: decodedData, options: []) as? [String: Any],
+			  let isAdmin = json["isAdmin"] as? Bool else {
+			return false
+		}
+		return true
 	}
 }
