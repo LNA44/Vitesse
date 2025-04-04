@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		F393BD4D2D97E5BF0096251F /* VitesseApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F393BD412D97E5BF0096251F /* VitesseApp.swift */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		F36E3E0A2D8C81BD00958B36 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -27,6 +31,7 @@
 		F36E3DF92D8C81BC00958B36 /* Vitesse.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Vitesse.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F36E3E092D8C81BD00958B36 /* VitesseTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VitesseTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		F36E3E132D8C81BD00958B36 /* VitesseUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VitesseUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		F393BD412D97E5BF0096251F /* VitesseApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VitesseApp.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -78,6 +83,7 @@
 				F35BFAF22D8DC66400BCDE3C /* Vitesse */,
 				F35BFAD62D8DC65100BCDE3C /* Model */,
 				F36E3E0C2D8C81BD00958B36 /* VitesseTests */,
+				F393BD412D97E5BF0096251F /* VitesseApp.swift */,
 				F36E3DFA2D8C81BC00958B36 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -234,6 +240,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F393BD4D2D97E5BF0096251F /* VitesseApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

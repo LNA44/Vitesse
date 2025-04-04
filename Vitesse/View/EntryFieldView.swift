@@ -8,29 +8,33 @@
 import SwiftUI
 
 struct EntryFieldView: View {
-	var isSecure: Bool = false
 	var placeHolder: String
-	var prompt: String
 	@Binding var field: String
+	var isSecure: Bool
+	var prompt: String
+	
     var body: some View {
 		VStack(alignment:.leading) {
 			HStack {
 				if isSecure {
 					SecureField(placeHolder, text: $field).autocapitalization(.none)
 						.frame(height: 20)
+						.onChange(of: field) { newValue in
+													print("New email: \(newValue)") // Débogue ici
+							}
 				} else {
 					TextField(placeHolder, text: $field).autocapitalization(.none)
 						.frame(height: 20)
+						.onChange(of: field) { newValue in
+													print("New email: \(newValue)") // Débogue ici
+							}
 				}
-			}.padding()
-				.background(Color(UIColor.secondarySystemBackground))
-				.cornerRadius(8)
+			}
+			.padding()
+			.background(Color(UIColor.secondarySystemBackground))
+			.cornerRadius(8)
 			Text(prompt)
 				.font(.caption)
 		}
     }
-}
-
-#Preview {
-	EntryFieldView(placeHolder: "Mot de passe", prompt: "Entrez un mot de passe valide", field: .constant(""))
 }

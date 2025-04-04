@@ -8,6 +8,7 @@
 import Security
 import Foundation
 
+	//MARK: -Protocol
 protocol KeyChainServiceProtocol {
 	func storeToken(token: String, key: String)
 	func retrieveToken(key: String) -> String?
@@ -16,8 +17,10 @@ protocol KeyChainServiceProtocol {
 
 //Gère le token en le cryptant
 class VitesseKeyChainService: ObservableObject, KeyChainServiceProtocol {
+	//MARK: -Properties
 	static let shared = VitesseKeyChainService() //création instance partagée singleton
 	
+	//MARK: -Initialisation
 	private init() {} //évite la création d'une autre instance
 	
 	func storeToken(token: String, key: String) { //Crée un token
@@ -30,6 +33,7 @@ class VitesseKeyChainService: ObservableObject, KeyChainServiceProtocol {
 		SecItemAdd(query as CFDictionary, nil)//ajout nouvel élément dans keychain
 	}
 	
+	//MARK: -Methods
 	func retrieveToken(key: String) -> String? { //Récupération du token
 		let query: [String: Any] = [//dictionnaire contenant les critères de recherche dans le keychain pour récupérer l'élément
 			kSecClass as String: kSecClassGenericPassword,

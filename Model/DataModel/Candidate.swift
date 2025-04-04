@@ -9,14 +9,13 @@ import Foundation
 //modèle interne à l'app
 
 struct Candidate: Decodable {
-	var internalId = UUID() //utile pour liste
 	let phone: String?
-	let note: String?
+	var note: String? //var: car modifiable dans TextEditor
 	let id: String
 	let firstName: String
-	let linkedinURL: String?
+	var linkedinURL: String?
 	let isFavorite: Bool
-	let email: String
+	var email: String
 	let lastName: String
 	
 	//MARK: -Init
@@ -29,5 +28,10 @@ struct Candidate: Decodable {
 		self.linkedinURL = candidate.linkedinURL ?? "" // Si nil, mettre une chaîne vide
 		self.note = candidate.note ?? "" // Si nil, mettre une chaîne vide
 		self.phone = candidate.phone ?? "" // Si nil, mettre une chaîne vide
+	}
+	
+	//MARK: -Calculated properties
+	var idUUID: UUID {
+		return UUID(uuidString: id) ?? UUID() //utile pour liste
 	}
 }
