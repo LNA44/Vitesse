@@ -8,12 +8,18 @@
 import SwiftUI
 
 struct RegisterView: View {
+	@StateObject var viewModel: RegisterViewModel
 	@State private var firstName: String = ""
 	@State private var lastName: String = ""
 	@State private var email: String = ""
 	@State private var password: String = ""
 	@State private var isNavigationActive = false
-	@ObservedObject var viewModel: RegisterViewModel
+	
+	init() {
+		let keychain = VitesseKeychainService()
+		let repository = VitesseRepository(keychain: keychain)
+		_viewModel = StateObject(wrappedValue: RegisterViewModel(repository: repository)) // Injection du repository dans le viewModel
+	}
 	
 	var body: some View {
 		VStack {
@@ -59,8 +65,9 @@ struct RegisterView: View {
 			Button(action: {
 				isNavigationActive = true
 				Task {
+					print("on est dans la task")
 					await viewModel.addUser()
-					
+					await viewModel.addCandidate()
 				}
 			}) {
 				Text("Create")
@@ -75,8 +82,12 @@ struct RegisterView: View {
 					)
 					.shadow(radius: 5)
 			}
+			.opacity(viewModel.isSignUpComplete ? 1 : 0.6)
+		//1 if true else 0.6
+				 .disabled(!viewModel.isSignUpComplete)
+				 //désactive : plus d'interaction possible
 			
-			NavigationLink(destination: LoginView(viewModel: appViewModel.loginViewModel), isActive: $isNavigationActive
+			NavigationLink(destination: LoginView(), isActive: $isNavigationActive
 			) {
 				EmptyView() // Un lien invisible qui se déclenche quand isNavigationActive devient true
 			}

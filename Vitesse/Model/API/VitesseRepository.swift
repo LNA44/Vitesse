@@ -7,18 +7,19 @@
 
 import Foundation
 
-struct VitesseService {
+struct VitesseRepository {
 	
 	//MARK: -Properties
 	let data: Data?
 	let response: URLResponse?
 	private let baseURLString: String
 	private let executeDataRequest: (URLRequest) async throws -> (Data, URLResponse) // permet d'utiliser un mock
-	private let keychain: KeyChainServiceProtocol // permet d'utiliser un mock
+	private let keychain: VitesseKeychainService // permet d'utiliser un mock
 	var isAdmin: Bool = false
+	private let APIService: VitesseAPIService
 
 	//MARK: -Error enumerations
-	enum LoginError: Error {
+	/*enum LoginError: Error {
 		case badURL
 		case noData
 		case requestFailed(String)
@@ -85,22 +86,23 @@ struct VitesseService {
 		case requestFailed(String)
 		case serverError(Int)
 		case decodingError
-	}
+	}*/
 	
 	//MARK: -Initialisation
 	init(data: Data? = nil, response: URLResponse? = nil, baseURLString: String = "http://127.0.0.1:8080",
-		 executeDataRequest: @escaping (URLRequest) async throws -> (Data, URLResponse) = URLSession.shared.data(for:), keychain: KeyChainServiceProtocol) {
+		 executeDataRequest: @escaping (URLRequest) async throws -> (Data, URLResponse) = URLSession.shared.data(for:), keychain: VitesseKeychainService, APIService: VitesseAPIService = VitesseAPIService()) {
 		self.data = data
 		self.response = response
 		self.baseURLString = baseURLString
 		self.executeDataRequest = executeDataRequest
 		self.keychain = keychain
+		self.APIService = APIService
 	}
 	
 	//MARK: -Methods
 	func login(email: String, password: String) async throws -> Bool {
 		guard let baseURL = URL(string: baseURLString) else {
-			throw LoginError.badURL
+			throw APIError.invalidURL
 		}
 		let endpoint = baseURL.appendingPathComponent("/user/auth")
 		//body de la requete
@@ -122,29 +124,29 @@ struct VitesseService {
 		let (data, response) = try await executeDataRequest(request)
 		
 		if data.isEmpty {//data est non optionnel dc pas de guard let
-			throw LoginError.noData
+			throw APIError.noData
 		}
 		guard let httpResponse = response as? HTTPURLResponse else { //response peut etre de type URLResponse et non HTTPURLResponse donc vérif
-			throw LoginError.requestFailed("Réponse du serveur invalide")
+			throw APIError.invalidResponse
 		}
 		guard httpResponse.statusCode == 200 else {
-			throw LoginError.serverError(httpResponse.statusCode)
+			throw APIError.httpError(statusCode: httpResponse.statusCode)
 		}
 		
 		//décodage du JSON
 		guard let responseJSON = try? JSONDecoder().decode(VitesseLoginResponse.self, from: data) //décoder sous la forme VitesseLoginResponse
 		else {
-			throw LoginError.decodingError
+			throw APIError.decodingError
 		}
 		//Stockage du token
-		keychain.storeToken(token: responseJSON.token, key: "authToken")
+		_ = keychain.saveToken(token: responseJSON.token, key: "authToken")
 		
 		return isAdmin
 	}
 	
-	func register(email: String, password: String, firstName: String, lastName: String) async throws -> Void {
+	func register(email: String, password: String, firstName: String, lastName: String) async throws -> Bool {
 		guard let baseURL = URL(string: baseURLString) else {
-			throw RegisterError.badURL
+			throw APIError.invalidURL
 		}
 		let endpoint = baseURL.appendingPathComponent("/user/register")
 		
@@ -166,34 +168,35 @@ struct VitesseService {
 		request.httpBody = jsonData
 				
 		//lancement appel réseau
-		let (data, response) = try await executeDataRequest(request)
+		let (_, response) = try await executeDataRequest(request)
 		
-		if !data.isEmpty {//data est non optionnel dc pas de guard let
-			throw RegisterError.dataNotEmpty
-		}
+		/*if !data.isEmpty {//data est non optionnel dc pas de guard let
+			throw APIError.dataEmpty
+		}*/
 		guard let httpResponse = response as? HTTPURLResponse else { //response peut etre de type URLResponse et non HTTPURLResponse donc vérif
-			throw RegisterError.requestFailed("Réponse du serveur invalide")
+			throw APIError.invalidResponse
 			
 		}
 
 		guard httpResponse.statusCode == 200 else {
-			throw RegisterError.serverError(httpResponse.statusCode)
+			throw APIError.httpError(statusCode: httpResponse.statusCode)
 		}
+		
+		return true
 	}
 	
 	func fetchCandidates() async throws -> [Candidate] {
 		guard let baseURL = URL(string: baseURLString) else {
-			throw FetchCandidatesError.badURL
+			throw APIError.invalidURL
 		}
 		let endpoint = baseURL.appendingPathComponent("/candidate")
-		
 		//création de la requête
 		var request = URLRequest(url: endpoint)
 		request.httpMethod = "GET"
 		
 		//Récupération du token
-		guard let token = keychain.retrieveToken(key: "authToken") else {
-			throw FetchCandidatesError.missingToken
+		guard let token = keychain.getToken(key: "authToken") else {
+			throw APIError.unauthorized
 		}
 		request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
 		
@@ -201,25 +204,25 @@ struct VitesseService {
 		let (data, response) = try await executeDataRequest(request)
 		
 		if data.isEmpty {//data est non optionnel dc pas de guard let
-			throw FetchCandidatesError.noData
+			throw APIError.noData
 		}
 		guard let httpResponse = response as? HTTPURLResponse else { //response peut etre de type URLResponse et non HTTPURLResponse donc vérif
-			throw FetchCandidatesError.requestFailed("Réponse du serveur invalide")
+			throw APIError.invalidResponse
 		}
 		guard httpResponse.statusCode == 200 else {
-			throw FetchCandidatesError.serverError(httpResponse.statusCode)
+			throw APIError.httpError(statusCode: httpResponse.statusCode)
 		}
 		
 		//décodage du JSON
-		guard let responseJSON = try? JSONDecoder().decode(VitesseCandidatesListResponse.self, from: data) else {
-			throw FetchCandidatesError.decodingError
+		guard let responseJSON = try? JSONDecoder().decode([Candidate].self, from: data) else {
+			throw APIError.decodingError
 		}
-		return responseJSON.candidates.map(Candidate.init)
+		return responseJSON
 	}
 	
 	func fetchCandidateDetails() async throws -> Candidate {
 		guard let baseURL = URL(string: baseURLString) else {
-			throw FetchCandidateDetailsError.badURL
+			throw APIError.invalidURL
 		}
 		let endpoint = baseURL.appendingPathComponent("/candidate/:candidateId")
 		
@@ -228,8 +231,8 @@ struct VitesseService {
 		request.httpMethod = "GET"
 		
 		//Récupération du token
-		guard let token = keychain.retrieveToken(key: "authToken") else {
-			throw FetchCandidateDetailsError.missingToken
+		guard let token = keychain.getToken(key: "authToken") else {
+			throw APIError.unauthorized
 		}
 		request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
 		
@@ -237,36 +240,38 @@ struct VitesseService {
 		let (data, response) = try await executeDataRequest(request)
 		
 		if data.isEmpty {//data est non optionnel dc pas de guard let
-			throw FetchCandidateDetailsError.noData
+			throw APIError.noData
 		}
 		guard let httpResponse = response as? HTTPURLResponse else { //response peut etre de type URLResponse et non HTTPURLResponse donc vérif
-			throw FetchCandidateDetailsError.requestFailed("Réponse du serveur invalide")
+			throw APIError.invalidResponse
 		}
 		guard httpResponse.statusCode == 200 else {
-			throw FetchCandidateDetailsError.serverError(httpResponse.statusCode)
+			throw APIError.httpError(statusCode: httpResponse.statusCode)
 		}
 		
 		//décodage du JSON
 		guard let candidate = try? JSONDecoder().decode(Candidate.self, from: data) else {
-			throw FetchCandidateDetailsError.decodingError
+			throw APIError.decodingError
 		}
 		return candidate
 	}
 	
-	func addCandidate(email: String, password: String, linkedinURL: String, firstName: String, lastName: String, phone: String) async throws -> Candidate {
+	func addCandidate(email: String, firstName: String, lastName: String) async throws -> Bool {
+		print("on est dans repo.addCandidate)")
 		guard let baseURL = URL(string: baseURLString) else {
-			throw AddCandidateError.badURL
+			print("erreur URL")
+			throw APIError.invalidURL
 		}
 		let endpoint = baseURL.appendingPathComponent("/candidate")
 		
 		//body de la requete
-		let parameters: [String: Any] = [
+		let parameters: [String: Any?] = [
 			"email": email,
-			"note": password,
-			"linkedinURL": linkedinURL,
+			"note": nil,
+			"linkedinURL": nil,
 			"firstName": firstName,
 			"lastName": lastName,
-			"phone": phone
+			"phone": nil
 		]
 		
 		//conversion en JSON
@@ -279,47 +284,46 @@ struct VitesseService {
 		request.httpBody = jsonData
 		
 		//Récupération du token
-		guard let token = keychain.retrieveToken(key: "authToken") else {
-			throw AddCandidateError.missingToken
+		guard let token = keychain.getToken(key: "authToken") else {
+			print("erreur token")
+			throw APIError.unauthorized
 		}
 		request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
 		
 		//lancement appel réseau
 		let (data, response) = try await executeDataRequest(request)
 		
-		if data.isEmpty {//data est non optionnel dc pas de guard let
-			throw AddCandidateError.noData
+		if data.isEmpty {
+			print("data is empty")
+			throw APIError.noData
 		}
 		guard let httpResponse = response as? HTTPURLResponse else { //response peut etre de type URLResponse et non HTTPURLResponse donc vérif
-			throw AddCandidateError.requestFailed("Réponse du serveur invalide")
+			print("response pas de type HTTPURLResponse")
+			throw APIError.invalidResponse
 		}
-		guard httpResponse.statusCode == 200 else {
-			throw AddCandidateError.serverError(httpResponse.statusCode)
+		guard httpResponse.statusCode == 201 else {
+			print("statusCode error")
+			throw APIError.httpError(statusCode: httpResponse.statusCode)
 		}
-		
-		//décodage du JSON
-		guard let candidate = try? JSONDecoder().decode(Candidate.self, from: data) else {
-			throw AddCandidateError.decodingError
-		}
-		return candidate
+		print("tout s'est bien passé")
+		return true
 	}
 	
-	func updateCandidate(email: String, password: String, linkedinURL: String, firstName: String, lastName: String, phone: String) async throws -> Candidate {
+	func updateCandidate(id:String, email: String, note: String?, linkedinURL: String?, firstName: String, lastName: String, phone: String?) async throws -> Candidate {
 		guard let baseURL = URL(string: baseURLString) else {
-			throw UpdateCandidateError.badURL
+			throw APIError.invalidURL
 		}
-		let endpoint = baseURL.appendingPathComponent("/candidate/:candidateId")
+		let endpoint = baseURL.appendingPathComponent("/candidate/\(id)")
 		
 		//body de la requete
-		let parameters: [String: Any] = [
+		let parameters: [String: Any?] = [
 			"email": email,
-			"note": password,
+			"note": note,
 			"linkedinURL": linkedinURL,
 			"firstName": firstName,
 			"lastName": lastName,
 			"phone": phone
 		]
-		
 		//conversion en JSON
 		let	jsonData = try JSONSerialization.data(withJSONObject: parameters, options: [])
 		
@@ -330,8 +334,8 @@ struct VitesseService {
 		request.httpBody = jsonData
 		
 		//Récupération du token
-		guard let token = keychain.retrieveToken(key: "authToken") else {
-			throw UpdateCandidateError.missingToken
+		guard let token = keychain.getToken(key: "authToken") else {
+			throw APIError.unauthorized
 		}
 		request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
 		
@@ -339,69 +343,65 @@ struct VitesseService {
 		let (data, response) = try await executeDataRequest(request)
 		
 		if data.isEmpty {//data est non optionnel dc pas de guard let
-			throw UpdateCandidateError.noData
+			throw APIError.noData
 		}
 		guard let httpResponse = response as? HTTPURLResponse else { //response peut etre de type URLResponse et non HTTPURLResponse donc vérif
-			throw UpdateCandidateError.requestFailed("Réponse du serveur invalide")
+			throw APIError.invalidResponse
 		}
 		guard httpResponse.statusCode == 200 else {
-			throw UpdateCandidateError.serverError(httpResponse.statusCode)
+			throw APIError.httpError(statusCode: httpResponse.statusCode)
 		}
 		
 		//décodage du JSON
 		guard let candidate = try? JSONDecoder().decode(Candidate.self, from: data) else {
-			throw UpdateCandidateError.decodingError
+			throw APIError.decodingError
 		}
 		return candidate
 	}
 	
-	func deleteCandidate() async throws -> Void {
+	func deleteCandidate(id: String) async throws -> Bool {
 		guard let baseURL = URL(string: baseURLString) else {
-			throw DeleteCandidateError.badURL
+			throw APIError.invalidURL
 		}
-		let endpoint = baseURL.appendingPathComponent("/candidate/:candidateId")
+		print("on est dans le repo")
+		let endpoint = baseURL.appendingPathComponent("/candidate/\(id)")
 		
 		//création de la requête
 		var request = URLRequest(url: endpoint)
 		request.httpMethod = "DELETE"
 		
 		//Récupération du token
-		guard let token = keychain.retrieveToken(key: "authToken") else {
-			throw DeleteCandidateError.missingToken
+		guard let token = keychain.getToken(key: "authToken") else {
+			throw APIError.unauthorized
 		}
 		request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
 		
 		//lancement appel réseau
-		let (data, response) = try await executeDataRequest(request)
+		let (_, response) = try await executeDataRequest(request)
 		
-		if !data.isEmpty {//data est non optionnel dc pas de guard let
-			throw DeleteCandidateError.dataNotEmpty
-		}
 		guard let httpResponse = response as? HTTPURLResponse else { //response peut etre de type URLResponse et non HTTPURLResponse donc vérif
-			throw DeleteCandidateError.requestFailed("Réponse du serveur invalide")
+			throw APIError.invalidResponse
 		}
 		guard httpResponse.statusCode == 200 else {
-			throw DeleteCandidateError.serverError(httpResponse.statusCode)
+			throw APIError.httpError(statusCode: httpResponse.statusCode)
 		}
+		return true
 	}
 	
-	func addCandidateToFavorites() async throws -> Candidate {
-		if isAdmin == false {
-			throw AddCandidateToFavoritesError.notAdminToken
-		}
-		
+	func addCandidateToFavorites(id: String) async throws -> Candidate { //renvoie la valeur inversée de isFavorite
+		print("on est dans repo.addCandidateToFavorites")
 		guard let baseURL = URL(string: baseURLString) else {
-			throw AddCandidateToFavoritesError.badURL
+			throw APIError.invalidURL
 		}
-		let endpoint = baseURL.appendingPathComponent("/candidate/:candidateId")
+		let endpoint = baseURL.appendingPathComponent("/candidate/\(id)/favorite")
 		
 		//création de la requête
 		var request = URLRequest(url: endpoint)
 		request.httpMethod = "POST"
 		
 		//Récupération du token
-		guard let token = keychain.retrieveToken(key: "authToken") else {
-			throw AddCandidateToFavoritesError.missingToken
+		guard let token = keychain.getToken(key: "authToken") else {
+			throw APIError.unauthorized
 		}
 
 		request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
@@ -411,18 +411,21 @@ struct VitesseService {
 		let (data, response) = try await executeDataRequest(request)
 		
 		if data.isEmpty {//data est non optionnel dc pas de guard let
-			throw AddCandidateToFavoritesError.noData
+			print("aucune data recue")
+			throw APIError.noData
 		}
 		guard let httpResponse = response as? HTTPURLResponse else { //response peut etre de type URLResponse et non HTTPURLResponse donc vérif
-			throw AddCandidateToFavoritesError.requestFailed("Réponse du serveur invalide")
+			print("reponse n'est pas de type HTTP")
+			throw APIError.invalidResponse
 		}
 		guard httpResponse.statusCode == 200 else {
-			throw AddCandidateToFavoritesError.serverError(httpResponse.statusCode)
+			print("problème de statusCode")
+			throw APIError.httpError(statusCode: httpResponse.statusCode)
 		}
 		
 		//décodage du JSON
 		guard let candidate = try? JSONDecoder().decode(Candidate.self, from: data) else {
-			throw AddCandidateToFavoritesError.decodingError
+			throw APIError.decodingError
 		}
 		return candidate
 	}

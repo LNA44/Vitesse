@@ -9,11 +9,10 @@ import Foundation
 //crée les instances des VM qui sont rechargées à chaque fois que la vue est mise à jour
 class VitesseAppViewModel: ObservableObject {
 	//MARK: -Properties
-	@Published var isLogged: Bool
-	@Published var isAdmin: Bool
-	private let repository: VitesseService
+	//@Published var isLogged: Bool = false
+	@Published var isAdmin: Bool = false
 	
-	//MARK: - Initialisation
+/*	//MARK: - Initialisation
 	init(repository: VitesseService) {
 		self.repository = repository
 		self.isLogged = false
@@ -26,17 +25,5 @@ class VitesseAppViewModel: ObservableObject {
 			self?.isLogged = isLogged
 			self?.isAdmin = isAdmin
 		}
-	}
-	
-	var registerViewModel: RegisterViewModel {
-		return RegisterViewModel(repository: repository)
-	}
-	
-	var candidatesListViewModel: CandidatesListViewModel {
-		return CandidatesListViewModel(repository:repository)
-	}
-	
-	var candidateDetailsViewModel: CandidateDetailsViewModel {
-		return CandidateDetailsViewModel(repository:repository)
-	}
+	}*/
 }

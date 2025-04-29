@@ -19,15 +19,13 @@ struct EntryFieldView: View {
 				if isSecure {
 					SecureField(placeHolder, text: $field).autocapitalization(.none)
 						.frame(height: 20)
-						.onChange(of: field) { newValue in
-													print("New email: \(newValue)") // Débogue ici
-							}
+						.onChange(of: field) {
+						}
 				} else {
 					TextField(placeHolder, text: $field).autocapitalization(.none)
 						.frame(height: 20)
-						.onChange(of: field) { newValue in
-													print("New email: \(newValue)") // Débogue ici
-							}
+						.onChange(of: field) {
+						}
 				}
 			}
 			.padding()

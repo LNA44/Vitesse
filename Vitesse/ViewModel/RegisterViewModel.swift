@@ -9,10 +9,10 @@ import Foundation
 
 class RegisterViewModel: ObservableObject {
 	//MARK: -Private properties
-	private let repository: VitesseService
+	private let repository: VitesseRepository
 	
 	//MARK: -Initialisation
-	init(repository: VitesseService) {
+	init(repository: VitesseRepository) {
 		self.repository = repository
 	}
 	
@@ -24,6 +24,13 @@ class RegisterViewModel: ObservableObject {
 	@Published var lastName: String = ""
 	@Published var errorMessage: String?
 	@Published var transferMessage: String = ""
+	
+	var isSignUpComplete: Bool {
+		if !isFirstNameValid() || !isLastNameValid() || !isEmailValid() || !isPasswordValid() || verifyPasswordPrompt != "" {
+			return false
+		}
+		return true
+	}
 	
 	var firstNamePrompt: String {
 		if !isFirstNameValid() {
@@ -66,20 +73,24 @@ class RegisterViewModel: ObservableObject {
 		do {
 			_ = try await repository.register(email: email, password: password, firstName: firstName, lastName: lastName)
 			transferMessage = "Successfully registered"
+		} catch let error as APIError {
+			errorMessage = error.errorDescription
 		} catch {
-			if let RegisterError = error as? VitesseService.RegisterError {
-				switch RegisterError {
-				case .badURL:
-					errorMessage = "URL non valide"
-				case .dataNotEmpty:
-					errorMessage = "Les données devraient être vides"
-				case .requestFailed:
-					errorMessage = "Erreur de requête"
-				case .serverError:
-					errorMessage = "Erreur serveur "
-				}
-				transferMessage = "Please fill the fields"
-			}
+			errorMessage = "Une erreur inconnue est survenue : \(error.localizedDescription)"
+		}
+	}
+	
+	@MainActor
+	func addCandidate() async {
+		do {
+			_ = try await repository.login(email: email, password: password) //permet de récupérer le token utile à addCandidate
+			print("on est dans VM.addCandidate")
+			_ = try await repository.addCandidate(email: email, firstName: firstName, lastName: lastName)
+			_ = VitesseKeychainService().deleteToken(key: "authToken")
+		} catch let error as APIError {
+			errorMessage = error.errorDescription
+		} catch {
+			errorMessage = "Une erreur inconnue est survenue : \(error.localizedDescription)"
 		}
 	}
 	

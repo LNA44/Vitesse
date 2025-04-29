@@ -7,35 +7,49 @@
 
 import SwiftUI
 struct CandidatesListView: View {
-	@ObservedObject var viewModel : CandidatesListViewModel
+	@StateObject var viewModel: CandidatesListViewModel
 	@State private var editing : Bool = false
-	var isAdmin: Bool
+	@State private var searchText = ""
+	
+	init() {
+		let keychain = VitesseKeychainService()
+		let repository = VitesseRepository(keychain: keychain)
+		_viewModel = StateObject(wrappedValue: CandidatesListViewModel(repository: repository)) // Injection du repository dans le viewModel
+	}
 	
 	var body: some View {
-		//NavigationStack {
-			VStack {
-				TextField("Search", text: .constant(""))
+		VStack {
+				TextField("Search", text: $searchText)
+					.frame(height: 50)
+					.padding(.horizontal, 10)
 				List {
 					if let candidates = viewModel.candidates {
-						ForEach(candidates, id: \.idUUID) { candidate in
-							HStack {
-								NavigationLink (destination: CandidateDetailsView(viewModel: CandidateDetailsViewModel(repository: VitesseService(keychain: VitesseKeyChainService.shared)), candidate: candidate, isAdmin: isAdmin)) { //création de l'instance du VM uniquement lorsque c'est nécessaire
-									RawCandidatesListView(editing: editing, candidate: candidate)
+							ForEach(candidates, id: \.idUUID) { candidate in
+								ZStack {
+									RawCandidatesListView(editing: editing, candidate: candidate, viewModel: viewModel)
+										.frame(maxWidth: .infinity, alignment: .leading)
+									if editing == false { //éviter de naviguer vers vue suivante en mode édition
+										NavigationLink (destination: CandidateDetailsView(candidate: candidate)) {
+										}
+									}
 								}
 							}
-						}
+					} else {
+						Text("aucun candidat trouvé")
 					}
-				}
-			}
+				}.padding(.top, 10)
+				.background(Color.brown)
+				.listRowSpacing(15)
+				.listStyle(.plain)
+		}
+			.navigationBarBackButtonHidden(true)
+			.navigationTitle("Candidats")
+			.navigationBarTitleDisplayMode(.inline)
 			.task {
 				await viewModel.fetchCandidates()
 			}
+		
 			.toolbar {
-				ToolbarItem(placement: .principal) {
-					Text("Candidats")
-						.font(.headline)
-				}
-				
 				if editing == false {
 					ToolbarItem(placement: .navigationBarLeading) {
 						Button(action: {
@@ -63,13 +77,20 @@ struct CandidatesListView: View {
 					
 					ToolbarItem(placement: .navigationBarTrailing) {
 						Button("Delete") {
-							editing = false
+							Task {
+								for candidate in viewModel.selectedCandidates {
+									await viewModel.deleteCandidate(id: candidate.uuidString)
+									}
+								viewModel.selectedCandidates.removeAll()
+								await viewModel.fetchCandidates()
+								editing = false
+							}
 						}
+						.disabled(viewModel.selectedCandidates.isEmpty)
 					}
 				}
 			}
 		}
-	//}
 }
 /*
 #Preview {

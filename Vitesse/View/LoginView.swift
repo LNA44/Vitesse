@@ -7,10 +7,14 @@
 
 import SwiftUI
 struct LoginView: View {
-	@ObservedObject var viewModel: LoginViewModel
-	@EnvironmentObject var appViewModel: VitesseAppViewModel
-	@State private var isAdmin = false
+	@StateObject var viewModel: LoginViewModel
 	@State private var isNavigationActive = false //obligatoire car on ne peut pas mettre un bouton (action) dans une navigationlink
+	
+	init() {
+		let keychain = VitesseKeychainService()
+		let repository = VitesseRepository(keychain: keychain)
+		_viewModel = StateObject(wrappedValue: LoginViewModel(repository: repository)) // Injection du repository dans le viewModel
+	}
 	
 	var body: some View {
 		NavigationStack {
@@ -39,10 +43,11 @@ struct LoginView: View {
 				
 				VStack(spacing: 35) {
 						Button(action: { //bouton utile pour l'action
-							isNavigationActive = true
 							Task {
-								await viewModel.login(email: viewModel.email, password: viewModel.password)//implémenter l'appel de la fonction qui appelle l'API pour vérifier un candidat
-								isAdmin = viewModel.isAdmin
+								let success = await viewModel.login(email: viewModel.email, password: viewModel.password)
+								if success {
+									isNavigationActive = true
+								}
 							}
 						}) {
 							Text("Sign in")
@@ -56,14 +61,18 @@ struct LoginView: View {
 										.stroke(Color.blue, lineWidth: 2)
 								)
 								.shadow(radius: 5)
-						}
+								
+						}.opacity(viewModel.isSignUpComplete ? 1 : 0.6)
+					//1 if true else 0.6
+							 .disabled(!viewModel.isSignUpComplete)
+							 //désactive : plus d'interaction possible
 				
-					NavigationLink(destination: CandidatesListView(viewModel: appViewModel.candidatesListViewModel, isAdmin: isAdmin), isActive: $isNavigationActive
+					NavigationLink(destination: CandidatesListView(), isActive: $isNavigationActive
 					) {
 						EmptyView() // Un lien invisible qui se déclenche quand isNavigationActive devient true
 					}
 					
-					NavigationLink(destination: RegisterView(viewModel: appViewModel.registerViewModel)) {
+					NavigationLink(destination: RegisterView()) {
 						Text("Register")
 							.frame(width: 100, height: 12)
 							.font(.system(size: 22))
@@ -80,8 +89,11 @@ struct LoginView: View {
 			}
 			.padding(60)
 			.navigationBarBackButtonHidden(true)
-
+			.alert(isPresented: $viewModel.showingAlert) {
+						Alert(title: Text("Identifiant et mot de passe non reconnus"), message: Text(viewModel.errorMessage ?? ""), dismissButton: .default(Text("OK")))
+					}
 		}
+		
 	}
 }
 

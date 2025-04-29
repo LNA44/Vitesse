@@ -8,61 +8,81 @@
 import SwiftUI
 
 struct CandidateDetailsView: View {
-	@ObservedObject var viewModel: CandidateDetailsViewModel
-	@State var editing: Bool = true
+	@StateObject var viewModel: CandidateDetailsViewModel
+	@State var editing: Bool = false
 	@State var essaiEntryField = "0658392874"
 	var candidate: Candidate
-	var isAdmin: Bool = false 
+	
+	init(candidate: Candidate) {
+		let keychain = VitesseKeychainService()
+		let repository = VitesseRepository(keychain: keychain)
+		_viewModel = StateObject(wrappedValue: CandidateDetailsViewModel(repository: repository, candidate: candidate, id: candidate.id, email: candidate.email, phone: candidate.phone, linkedinURL: candidate.linkedinURL, note: candidate.note, firstName: candidate.firstName, lastName: candidate.lastName, isFavorite: candidate.isFavorite)) // Injection du repository dans le viewModel
+		self.candidate = candidate
+	}
 	
 	var body: some View {
-		//NavigationStack {
 			VStack {
 				if editing == false {
 					VStack(alignment: .leading) {
 						HStack {
 							HStack {
-								Text(viewModel.candidate?.firstName ?? "No candidate first name")//si candidate = nil -> toute l'expression = nil
-								Text(viewModel.candidate?.lastName ?? "No candidate last name")
+								Text(viewModel.firstName)//si candidate = nil -> toute l'expression = nil
+								Text(viewModel.lastName)
 							}
 							.font(.title)
 							Spacer()
-							Image(systemName: "star.fill")
+							Button(action : {
+								Task {
+									await viewModel.toggleFavorite()  // Inverse la valeur de `isFavorite`
+								}
+							}) {
+								Image(systemName: viewModel.isFavorite == true ? "star.fill" : "star")
+							}
+						//	candidate.isFavorite ? Image(systemName: "star.fill") : Image(systemName: "star")
 						}
 						.padding(.bottom, 50)
 						
-						Text(viewModel.candidate?.phone ?? "No candidate phone number")
-							.padding(.bottom, 30)
-						
-						Text(viewModel.candidate?.email ?? "No candidate email")
-							.padding(.bottom, 30)
-						
-						HStack (spacing: 50){
-							Text("LinkedIn")
-							Button(action: {
-								viewModel.convertStringToURL(viewModel.candidate?.linkedinURL)
-								if let validURL = viewModel.url {
-									UIApplication.shared.open(validURL)
+						VStack (alignment: .leading, spacing: 30) {
+							HStack (spacing: 30) {
+								Text("Phone")
+								Text(viewModel.phone ?? "No candidate phone number")
+							}
+							
+							HStack (spacing: 30) {
+								Text("Email")
+								Text(viewModel.email)
+							}
+							
+							HStack (spacing: 50){
+								Text("LinkedIn")
+									
+								Button(action: {
+									viewModel.convertStringToURL(viewModel.linkedinURL)
+									if let validURL = viewModel.url {
+										UIApplication.shared.open(validURL)
+									}
+								}) {
+									Text("Go on LinkedIn")
 								}
-							 }) {
-							 Text("Go on LinkedIn")
-							 }
-							 .foregroundColor(Color.white)
-							 .font(.system(size: 10))
-							 .padding()
-							 .background(Color.blue)
-							 .cornerRadius(10)
-							 .disabled(viewModel.url == nil) // Désactive le bouton si l'URL n'est pas valide
+								.foregroundColor(Color.white)
+								.font(.system(size: 15))
+								.padding()
+								.frame(width: 150, height: 30)
+								.background(Color.blue)
+								.cornerRadius(10)
+								.disabled(viewModel.url == nil) // Désactive le bouton si l'URL n'est pas valide
+							}
+							.padding(.bottom, 25)
 						}
-						.padding(.bottom, 30)
 						
 						Text("Note")
 							.padding(.bottom, 10)
 						
 						TextEditor(text: Binding(//TextEditor n'accepte pas d'optionnel
 							get: { //on crée un binding personnalisé
-							viewModel.candidate?.note ?? "" // VM->View : si candidate ou note = nil alors "" renvoyé
+							viewModel.note ?? "" // VM->View : si candidate ou note = nil alors "" renvoyé
 						}, set: {
-							viewModel.candidate?.note = $0 // View->VM : ce que rentre l'utilisateur envoyé au VM
+							viewModel.note = $0 // View->VM : ce que rentre l'utilisateur envoyé au VM
 						}))
 							.padding()
 							.frame(width: 320, height: 200)
@@ -76,50 +96,54 @@ struct CandidateDetailsView: View {
 						Spacer()
 						
 					}
-					.padding(30)
+					.padding(.top, 10)
+					.padding(.leading, 30)
+					.padding(.trailing, 30)
 				} else {
 					VStack(alignment: .leading) {
-						Text(viewModel.candidate?.firstName ?? "No candidate first name") //\(candidate.firstName, candidate.LastName)
-							.font(.title)
-							.padding(.bottom, 20)
-						
+						HStack {
+							Text(viewModel.firstName) //\(candidate.firstName, candidate.LastName)
+							Text(viewModel.lastName)
+						}
+						.font(.title)
+						.padding(.bottom, 20)
+
 						Text("Phone")
 							.padding(.bottom, 5)
 						
 						EntryFieldView(placeHolder: "", field: Binding(get: { //EntryField ne prend pas d'optionnel
-							viewModel.candidate?.phone ?? ""
-						}, set: {
-							viewModel.candidate?.note = $0
-						}),
-						isSecure: false, prompt: "",)
+							viewModel.phone ?? "" //si nil alors chaine vide
+						}, set: { newValue in
+							if newValue.isEmpty {
+								viewModel.phone = nil // Si l'utilisateur efface le champ, mettre phone à nil
+							} else {
+								viewModel.phone = newValue // Sinon mettre la nouvelle valeur dans phone
+							}}),
+						isSecure: false, prompt: "")
 						
 						Text("Email")
 							.padding(.bottom, 5)
 						
-						EntryFieldView(placeHolder: "",  field: Binding(get: {
-							viewModel.candidate?.email ?? ""
-						}, set: {
-							viewModel.candidate?.email = $0
-						}),
-						isSecure: false, prompt: "",)
+						EntryFieldView(placeHolder: "", field: $viewModel.email,
+						isSecure: false, prompt: "")
 						
 						Text("LinkedIn")
 							.padding(.bottom, 5)
 						
-						EntryFieldView(placeHolder: "",  field: Binding(get: {
-							viewModel.candidate?.linkedinURL ?? ""
+						EntryFieldView(placeHolder: "", field: Binding(get: {
+							viewModel.linkedinURL ?? ""
 						}, set: {
-							viewModel.candidate?.linkedinURL = $0
+							viewModel.linkedinURL = $0
 						}),
-						isSecure: false, prompt: "",)
+						isSecure: false, prompt: "")
 						
 						Text("Note")
 							.padding(.bottom, 10)
 						
 						TextEditor(text: Binding(get: {
-							viewModel.candidate?.note ?? "" // VM->View : si candidate ou note = nil alors "" renvoyé
+							viewModel.note ?? "" // VM->View : si candidate ou note = nil alors "" renvoyé
 						}, set: {
-							viewModel.candidate?.note = $0 // View->VM : ce que rentre l'utilisateur envoyé au VM
+							viewModel.note = $0 // View->VM : ce que rentre l'utilisateur envoyé au VM
 						}))
 							.padding()
 							.frame(width: 320, height: 200)
@@ -128,14 +152,12 @@ struct CandidateDetailsView: View {
 								RoundedRectangle(cornerRadius: 30)
 									.stroke(Color.gray, lineWidth: 1)
 							}
-						
 						Spacer()
-						
 					}
-					.padding(30)
-					
+					.padding(.top, 10)
+					.padding(.leading, 30)
+					.padding(.trailing, 30)
 				}
-				
 			}.onAppear {
 				// Met à jour le candidat sélectionné dans le VM
 				viewModel.candidate = candidate
@@ -155,14 +177,22 @@ struct CandidateDetailsView: View {
 					}
 					
 					ToolbarItem(placement: .navigationBarTrailing) {
-						Button(action: {editing = false}) {
+						Button(action: {
+							editing = false
+							Task {
+								await viewModel.updateCandidate()
+							}
+						}) {
 							Text("Done")
 						}
+						.disabled(candidate.email.isEmpty) // Désactive le bouton si l'email est vide
+						.opacity(candidate.email.isEmpty ? 0.5 : 1.0) // Rend le bouton plus opaque si l'email est vide
 					}
 				}
 			}
+			.navigationBarBackButtonHidden(editing)
 		}
-	//}
+	
 }
 
 /*#Preview {

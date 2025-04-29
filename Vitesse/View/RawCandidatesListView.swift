@@ -10,33 +10,55 @@ import SwiftUI
 struct RawCandidatesListView: View {
 	let editing: Bool //suit editing de la vue parent
 	let candidate: Candidate
+	@StateObject var viewModel: CandidatesListViewModel
 	
     var body: some View {
 		if editing == false {
-			HStack (spacing: 100) {
+			HStack {
 				Text("\(candidate.firstName) \(candidate.lastName)")
 				Spacer()
 				candidate.isFavorite ? Image(systemName: "star.fill") : Image(systemName: "star")
 			}
-			.padding(40)
 		} else {
 			HStack {
-				Circle()
-					.frame(width: 20, height: 20)
-					.padding(.trailing, 30)
+				Button(action : {
+					if viewModel.selectedCandidates.contains(candidate.idUUID) {
+						// Supprimer l'ID du tableau
+						viewModel.selectedCandidates.removeAll { $0 == candidate.idUUID
+					}
+					} else {
+						// Ajouter l'ID au tableau
+						viewModel.selectedCandidates.append(candidate.idUUID)
+					}
+				}) {
+					Image(systemName: viewModel.selectedCandidates.contains(candidate.idUUID) ? "checkmark.circle.fill" : "circle")
+				}
 
 				Text("\(candidate.firstName) \(candidate.lastName)")
-					.padding(.trailing, 160)
-
+				Spacer()
 				candidate.isFavorite ? Image(systemName: "star.fill") : Image(systemName: "star")
+
+				/*Button(action : {
+					Task {
+						await viewModel.toggleFavorite(candidate: candidate)  // Inverse la valeur de `isFavorite`
+					}
+				}) {
+					Image(systemName: viewModel.isAdmin == true ? "star.fill" : "star")
+				}*/
 			}
-			.padding(40)
 		}
     }
 }
 
-#Preview {
-	let simulatedAPIResponse = VitesseCandidatesListResponse.Candidate(
+/*#Preview {
+	let simulatedAPIResponse =
+	
+	// Convertit en un objet de type Candidate
+	let simulatedCandidate = Candidate(candidate: simulatedAPIResponse)
+	RawCandidatesListView(editing: true, candidate: simulatedCandidate)
+}*/
+/*#Preview {
+	RawCandidatesListView(editing: false, candidate: Candidate(candidate: Candidate(
 		phone: "123-456-7890",
 		note: "Experienced iOS Developer",
 		id: "12345",
@@ -45,9 +67,6 @@ struct RawCandidatesListView: View {
 		isFavorite: true,
 		email: "johndoe@example.com",
 		lastName: "Doe"
-		)
-	
-	// Convertit en un objet de type Candidate
-	let simulatedCandidate = Candidate(candidate: simulatedAPIResponse)
-	RawCandidatesListView(editing: true, candidate: simulatedCandidate)
+		)))
 }
+*/

@@ -10,12 +10,12 @@ import Foundation
 class LoginViewModel: ObservableObject {
 	
 	//MARK: - Private properties
-	private let repository: VitesseService
+	private let repository: VitesseRepository
 	
 	//MARK: -Initialisation
-	init(repository: VitesseService, _ callback: @escaping ((Bool, Bool) -> Void)) {
+	init(repository: VitesseRepository) {
 		self.repository = repository
-		self.onLoginSucceed = callback
+		//self.onLoginSucceed = callback
 	}
 	
 	//MARK: -Ouputs
@@ -23,7 +23,8 @@ class LoginViewModel: ObservableObject {
 	@Published var password: String = ""
 	@Published var isAdmin: Bool = false
 	@Published var errorMessage: String? = nil
-	var onLoginSucceed: ((Bool, Bool) -> Void)  // Callback avec isLogged et isAdmin
+	@Published var showingAlert: Bool = false
+	//var onLoginSucceed: ((Bool, Bool) -> Void)  // Callback avec isLogged et isAdmin
 	
 	var isSignUpComplete: Bool {
 		if !isPasswordValid() || !isEmailValid() {
@@ -48,26 +49,19 @@ class LoginViewModel: ObservableObject {
 	
 	//MARK: -Inputs
 	@MainActor
-	func login(email: String, password: String) async {
+	func login(email: String, password: String) async -> Bool {
 		do {
 			let isAdmin = try await repository.login(email: email, password: password)
-			self.onLoginSucceed(true, isAdmin) //exécute la closure du callback dans VitesseAppViewModel
+			return true
+			//self.onLoginSucceed(true, isAdmin) //exécute la closure du callback dans VitesseAppViewModel
+		} catch let error as APIError {
+			errorMessage = error.errorDescription
+			showingAlert = true
+			return false
 		} catch {
-			self.onLoginSucceed(false, false)
-			if let LoginError = error as? VitesseService.LoginError { //si ok alors FetchCandidatesError = VitesseService.fetchCandidatesError sinon nil
-				switch LoginError {
-				case .badURL:
-					errorMessage = "URL non valide"
-				case .noData:
-					errorMessage = "Aucune donnée disponible"
-				case .requestFailed:
-					errorMessage = "Erreur de requête"
-				case .serverError:
-					errorMessage = "Erreur du serveur "
-				case .decodingError:
-					errorMessage = "Erreur de décodage des données"
-				}
-			}
+			errorMessage = "Une erreur inconnue est survenue : \(error.localizedDescription)"
+			showingAlert = true
+			return false
 		}
 	}
 	
