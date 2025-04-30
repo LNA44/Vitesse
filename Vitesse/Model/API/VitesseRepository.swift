@@ -389,7 +389,6 @@ struct VitesseRepository {
 	}
 	
 	func addCandidateToFavorites(id: String) async throws -> Candidate { //renvoie la valeur inversée de isFavorite
-		print("on est dans repo.addCandidateToFavorites")
 		guard let baseURL = URL(string: baseURLString) else {
 			throw APIError.invalidURL
 		}
@@ -411,23 +410,19 @@ struct VitesseRepository {
 		let (data, response) = try await executeDataRequest(request)
 		
 		if data.isEmpty {//data est non optionnel dc pas de guard let
-			print("aucune data recue")
 			throw APIError.noData
 		}
 		guard let httpResponse = response as? HTTPURLResponse else { //response peut etre de type URLResponse et non HTTPURLResponse donc vérif
-			print("reponse n'est pas de type HTTP")
 			throw APIError.invalidResponse
 		}
 		guard httpResponse.statusCode == 200 else {
-			print("problème de statusCode")
 			throw APIError.httpError(statusCode: httpResponse.statusCode)
 		}
-		
+
 		//décodage du JSON
 		guard let candidate = try? JSONDecoder().decode(Candidate.self, from: data) else {
 			throw APIError.decodingError
 		}
 		return candidate
 	}
-	
 }
