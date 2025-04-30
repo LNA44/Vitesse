@@ -18,10 +18,25 @@ class CandidatesListViewModel: ObservableObject {
 	
 	//MARK: -Outputs
 	@Published var showAlert: Bool = false
-	@Published var candidates: [Candidate]? = nil
+	@Published var searchText: String = "" {
+		didSet { //filtre réappliqué à chaque changement d'état de searchText
+			applyFilters(filterFavorites: filterFavorites, filterName: searchText)
+		}
+	}
+	@Published var candidates: [Candidate]? = nil {
+		didSet { //filtre appliqué uniquement après que candidate soit chargé
+			applyFilters(filterFavorites: filterFavorites, filterName: searchText)
+		}
+	}
 	@Published var errorMessage: String? = nil
-	@Published var isAdmin: Bool = false
 	@Published var selectedCandidates: [UUID] = []
+	@Published var filterFavorites: Bool = false {
+		didSet { //filtre réappliqué à chaque changement d'état de filterFavorites
+			applyFilters(filterFavorites: filterFavorites, filterName: searchText)
+		}
+	}
+	@Published var filteredFavCandidates : [Candidate] = []
+	@Published var filteredNameCandidates : [Candidate] = []
 	
 	//MARK: -Inputs
 	@MainActor
@@ -57,28 +72,26 @@ class CandidatesListViewModel: ObservableObject {
 		}
 	}
 	
-	/*// Fonction pour basculer l'état de favoris d'un candidat
-	func toggleFavorite(candidate: Candidate) async {
-		guard var candidates = self.candidates else { //donne la valeur de la propriété candidates à la var candidates et unwrap l'optionnel
-			// Si candidates est nil, on ne fait rien ou on gère l'erreur ici
+	func applyFilters(filterFavorites: Bool, filterName: String) {
+		guard let candidates = candidates else {
 			return
 		}
-		if let index = candidates.firstIndex(where: { $0.idUUID == candidate.idUUID }) {
-			// Inverser l'état de favoris du candidat
-			candidates[index].isFavorite.toggle()
-			
-			// Enregistrer les modifications dans le backend si nécessaire
-			do {
-				_ = try await repository.updateCandidate(id: candidate.id, email: candidate.email, note: candidate.note, linkedinURL: candidate.linkedinURL, firstName: candidate.firstName, lastName: candidate.lastName, phone: candidate.phone)
-				self.candidates = candidates //Réaffecter la valeur à la propriété d'instance
-			} catch let error as APIError {
-				errorMessage = error.errorDescription
-				showAlert = true
-			} catch {
-				errorMessage = "Une erreur inconnue est survenue : \(error.localizedDescription)"
-				showAlert = true
-			}
+		// Filtrage par favoris
+		if filterFavorites == true {
+			filteredFavCandidates = candidates.filter{$0.isFavorite}
+		} else {
+			filteredFavCandidates = candidates
 		}
-	}*/
+		// Filtrage par nom/prénom
+		if !searchText.isEmpty {
+			filteredNameCandidates = filteredFavCandidates.filter { candidate in
+				let firstNameMatch = candidate.firstName.lowercased().contains(filterName.lowercased())
+				let lastNameMatch = candidate.lastName.lowercased().contains(filterName.lowercased())
+				return firstNameMatch || lastNameMatch
+			}
+		} else {
+			filteredNameCandidates = filteredFavCandidates
+		}
+	}
 }
 

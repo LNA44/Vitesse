@@ -9,7 +9,6 @@ import SwiftUI
 struct CandidatesListView: View {
 	@StateObject var viewModel: CandidatesListViewModel
 	@State private var editing : Bool = false
-	@State private var searchText = ""
 	
 	init() {
 		let keychain = VitesseKeychainService()
@@ -19,12 +18,11 @@ struct CandidatesListView: View {
 	
 	var body: some View {
 		VStack {
-				TextField("Search", text: $searchText)
+			TextField("Search", text: $viewModel.searchText)
 					.frame(height: 50)
 					.padding(.horizontal, 10)
 				List {
-					if let candidates = viewModel.candidates {
-							ForEach(candidates, id: \.idUUID) { candidate in
+						ForEach(viewModel.filteredNameCandidates, id: \.idUUID) { candidate in
 								ZStack {
 									RawCandidatesListView(editing: editing, candidate: candidate, viewModel: viewModel)
 										.frame(maxWidth: .infinity, alignment: .leading)
@@ -34,9 +32,6 @@ struct CandidatesListView: View {
 									}
 								}
 							}
-					} else {
-						Text("aucun candidat trouvé")
-					}
 				}.padding(.top, 10)
 				.background(Color.brown)
 				.listRowSpacing(15)
@@ -59,15 +54,13 @@ struct CandidatesListView: View {
 						}
 					}
 					
-					/*ToolbarItem(placement: .navigationBarTrailing) {
-						Button(action: {
-							showFavorites.toggle()
-						}) {
-							Image(systemName: showFavorites ? "star.fill" : "star")
-								.foregroundColor(showFavorites ? .yellow : .gray)
-						}
-					}*/
-					
+					ToolbarItem(placement: .navigationBarTrailing) {
+						Image(systemName: viewModel.filterFavorites ? "star.fill" : "star")
+								//.foregroundColor(filterFavorites ? .yellow : .gray)
+							.onTapGesture {
+								viewModel.filterFavorites.toggle()
+							}
+					}
 				} else {
 					ToolbarItem(placement: .navigationBarLeading) {
 						Button("Cancel") {

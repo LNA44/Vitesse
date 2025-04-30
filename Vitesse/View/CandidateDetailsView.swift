@@ -38,7 +38,6 @@ struct CandidateDetailsView: View {
 							}) {
 								Image(systemName: viewModel.isFavorite == true ? "star.fill" : "star")
 							}
-						//	candidate.isFavorite ? Image(systemName: "star.fill") : Image(systemName: "star")
 						}
 						.padding(.bottom, 50)
 						
@@ -57,8 +56,7 @@ struct CandidateDetailsView: View {
 								Text("LinkedIn")
 									
 								Button(action: {
-									viewModel.convertStringToURL(viewModel.linkedinURL)
-									if let validURL = viewModel.url {
+									if let validURL = viewModel.convertStringToURL(viewModel.linkedinURL) {
 										UIApplication.shared.open(validURL)
 									}
 								}) {
@@ -70,7 +68,6 @@ struct CandidateDetailsView: View {
 								.frame(width: 150, height: 30)
 								.background(Color.blue)
 								.cornerRadius(10)
-								.disabled(viewModel.url == nil) // Désactive le bouton si l'URL n'est pas valide
 							}
 							.padding(.bottom, 25)
 						}

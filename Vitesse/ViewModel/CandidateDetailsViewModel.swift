@@ -29,7 +29,7 @@ class CandidateDetailsViewModel: ObservableObject {
 	//MARK: -Outputs
 	@Published var showAlert: Bool = false
 	@Published var candidate: Candidate
-	@Published var url: URL?
+	//@Published var url: URL?
 	@Published var id: String
 	@Published var email: String
 	@Published var phone: String?
@@ -39,16 +39,14 @@ class CandidateDetailsViewModel: ObservableObject {
 	@Published var lastName: String
 	@Published var errorMessage: String = ""
 	@Published var isFavorite: Bool
-	@Published var isAdmin: Bool = false
 	
 	//MARK: -Inputs
 	
-	func convertStringToURL(_ urlString: String?) {
+	func convertStringToURL(_ urlString: String?) ->URL? {
 		guard let urlString = urlString, let validUrl = URL(string: urlString) else { //vérifie que urlString n'est pas nil
-			url = nil
-			return
+			return nil
 		}
-		url = validUrl
+		return validUrl
 	}
 	
 	@MainActor
