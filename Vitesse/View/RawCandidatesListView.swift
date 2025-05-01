@@ -22,14 +22,7 @@ struct RawCandidatesListView: View {
 		} else {
 			HStack {
 				Button(action : {
-					if viewModel.selectedCandidates.contains(candidate.idUUID) {
-						// Supprimer l'ID du tableau
-						viewModel.selectedCandidates.removeAll { $0 == candidate.idUUID
-					}
-					} else {
-						// Ajouter l'ID au tableau
-						viewModel.selectedCandidates.append(candidate.idUUID)
-					}
+					viewModel.toggleSelection(candidate: candidate)
 				}) {
 					Image(systemName: viewModel.selectedCandidates.contains(candidate.idUUID) ? "checkmark.circle.fill" : "circle")
 				}
@@ -37,14 +30,6 @@ struct RawCandidatesListView: View {
 				Text("\(candidate.firstName) \(candidate.lastName)")
 				Spacer()
 				candidate.isFavorite ? Image(systemName: "star.fill") : Image(systemName: "star")
-
-				/*Button(action : {
-					Task {
-						await viewModel.toggleFavorite(candidate: candidate)  // Inverse la valeur de `isFavorite`
-					}
-				}) {
-					Image(systemName: viewModel.isAdmin == true ? "star.fill" : "star")
-				}*/
 			}
 		}
     }

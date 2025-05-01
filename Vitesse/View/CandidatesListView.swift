@@ -12,7 +12,7 @@ struct CandidatesListView: View {
 	
 	init() {
 		let keychain = VitesseKeychainService()
-		let repository = VitesseRepository(keychain: keychain)
+		let repository = VitesseCandidateRepository(keychain: keychain)
 		_viewModel = StateObject(wrappedValue: CandidatesListViewModel(repository: repository)) // Injection du repository dans le viewModel
 	}
 	

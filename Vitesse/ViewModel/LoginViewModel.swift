@@ -10,10 +10,10 @@ import Foundation
 class LoginViewModel: ObservableObject {
 	
 	//MARK: - Private properties
-	private let repository: VitesseRepository
+	private let repository: VitesseAuthenticationRepository
 	
 	//MARK: -Initialisation
-	init(repository: VitesseRepository) {
+	init(repository: VitesseAuthenticationRepository) {
 		self.repository = repository
 		//self.onLoginSucceed = callback
 	}
@@ -51,10 +51,11 @@ class LoginViewModel: ObservableObject {
 	@MainActor
 	func login(email: String, password: String) async -> Bool {
 		do {
-			let isAdmin = try await repository.login(email: email, password: password)
+			_ = try await repository.login(email: email, password: password)
 			return true
 			//self.onLoginSucceed(true, isAdmin) //exécute la closure du callback dans VitesseAppViewModel
 		} catch let error as APIError {
+			print("erreur d'API")
 			errorMessage = error.errorDescription
 			showingAlert = true
 			return false

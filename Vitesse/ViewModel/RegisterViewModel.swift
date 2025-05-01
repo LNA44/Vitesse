@@ -9,11 +9,13 @@ import Foundation
 
 class RegisterViewModel: ObservableObject {
 	//MARK: -Private properties
-	private let repository: VitesseRepository
+	private let authRepository: VitesseAuthenticationRepository
+	private let candidateRepository: VitesseCandidateRepository
 	
 	//MARK: -Initialisation
-	init(repository: VitesseRepository) {
-		self.repository = repository
+	init(authRepository: VitesseAuthenticationRepository, candidateRepository: VitesseCandidateRepository) {
+		self.authRepository = authRepository
+		self.candidateRepository = candidateRepository
 	}
 	
 	//MARK: -Outputs
@@ -71,7 +73,7 @@ class RegisterViewModel: ObservableObject {
 	@MainActor
 	func addUser() async {
 		do {
-			_ = try await repository.register(email: email, password: password, firstName: firstName, lastName: lastName)
+			_ = try await authRepository.register(email: email, password: password, firstName: firstName, lastName: lastName)
 			transferMessage = "Successfully registered"
 		} catch let error as APIError {
 			errorMessage = error.errorDescription
@@ -83,9 +85,8 @@ class RegisterViewModel: ObservableObject {
 	@MainActor
 	func addCandidate() async {
 		do {
-			_ = try await repository.login(email: email, password: password) //permet de récupérer le token utile à addCandidate
-			print("on est dans VM.addCandidate")
-			_ = try await repository.addCandidate(email: email, firstName: firstName, lastName: lastName)
+			_ = try await authRepository.login(email: email, password: password) //permet de récupérer le token utile à addCandidate
+			_ = try await candidateRepository.addCandidate(email: email, firstName: firstName, lastName: lastName)
 			_ = VitesseKeychainService().deleteToken(key: "authToken")
 		} catch let error as APIError {
 			errorMessage = error.errorDescription

@@ -9,10 +9,10 @@ import Foundation
 
 class CandidateDetailsViewModel: ObservableObject {
 	//MARK: -Private properties
-	private let repository: VitesseRepository
+	private let repository: VitesseCandidateRepository
 
 	//MARK: -Initialisation
-	init(repository: VitesseRepository, candidate: Candidate, id: String, email: String, phone: String?, linkedinURL: String?, note: String?, firstName: String, lastName: String, isFavorite: Bool) {
+	init(repository: VitesseCandidateRepository, candidate: Candidate, id: String, email: String, phone: String?, linkedinURL: String?, note: String?, firstName: String, lastName: String, isFavorite: Bool) {
 		self.repository = repository
 		self.candidate = candidate
 		self.id = id
@@ -29,7 +29,6 @@ class CandidateDetailsViewModel: ObservableObject {
 	//MARK: -Outputs
 	@Published var showAlert: Bool = false
 	@Published var candidate: Candidate
-	//@Published var url: URL?
 	@Published var id: String
 	@Published var email: String
 	@Published var phone: String?
@@ -37,7 +36,7 @@ class CandidateDetailsViewModel: ObservableObject {
 	@Published var note: String?
 	@Published var firstName: String
 	@Published var lastName: String
-	@Published var errorMessage: String = ""
+	@Published var errorMessage: String? = ""
 	@Published var isFavorite: Bool
 	
 	//MARK: -Inputs
@@ -74,7 +73,7 @@ class CandidateDetailsViewModel: ObservableObject {
 		do {
 			let updatedCandidate = try await repository.addCandidateToFavorites(id: candidate.id)
 			self.candidate = updatedCandidate
-			self.isFavorite = candidate.isFavorite //affecte la valeur à la propriété
+			self.isFavorite = updatedCandidate.isFavorite //affecte la valeur à la propriété
 		} catch let error as APIError {
 			errorMessage = error.errorDescription
 			showAlert = true
