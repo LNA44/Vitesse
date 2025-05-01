@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct VitesseRepository {
+/*struct VitesseRepository {
 	
 	//MARK: -Properties
 	let data: Data?
@@ -15,78 +15,8 @@ struct VitesseRepository {
 	private let baseURLString: String
 	private let executeDataRequest: (URLRequest) async throws -> (Data, URLResponse) // permet d'utiliser un mock
 	private let keychain: VitesseKeychainService // permet d'utiliser un mock
-	var isAdmin: Bool = false
+	private var isAdmin: Bool = false
 	private let APIService: VitesseAPIService
-
-	//MARK: -Error enumerations
-	/*enum LoginError: Error {
-		case badURL
-		case noData
-		case requestFailed(String)
-		case serverError(Int)
-		case decodingError
-	}
-	
-	enum RegisterError: Error {
-		case badURL
-		case dataNotEmpty
-		case requestFailed(String)
-		case serverError(Int)
-	}
-	
-	enum FetchCandidatesError: Error {
-		case badURL
-		case missingToken
-		case noData
-		case requestFailed(String)
-		case serverError(Int)
-		case decodingError
-	}
-	
-	enum FetchCandidateDetailsError: Error {
-		case badURL
-		case missingToken
-		case noData
-		case requestFailed(String)
-		case serverError(Int)
-		case decodingError
-	}
-	
-	enum AddCandidateError: Error {
-		case badURL
-		case missingToken
-		case noData
-		case requestFailed(String)
-		case serverError(Int)
-		case decodingError
-	}
-	
-	enum UpdateCandidateError: Error {
-		case badURL
-		case missingToken
-		case noData
-		case requestFailed(String)
-		case serverError(Int)
-		case decodingError
-	}
-	
-	enum DeleteCandidateError: Error {
-		case badURL
-		case missingToken
-		case dataNotEmpty
-		case requestFailed(String)
-		case serverError(Int)
-	}
-	
-	enum AddCandidateToFavoritesError: Error {
-		case badURL
-		case missingToken
-		case notAdminToken
-		case noData
-		case requestFailed(String)
-		case serverError(Int)
-		case decodingError
-	}*/
 	
 	//MARK: -Initialisation
 	init(data: Data? = nil, response: URLResponse? = nil, baseURLString: String = "http://127.0.0.1:8080",
@@ -363,7 +293,6 @@ struct VitesseRepository {
 		guard let baseURL = URL(string: baseURLString) else {
 			throw APIError.invalidURL
 		}
-		print("on est dans le repo")
 		let endpoint = baseURL.appendingPathComponent("/candidate/\(id)")
 		
 		//création de la requête
@@ -426,3 +355,4 @@ struct VitesseRepository {
 		return candidate
 	}
 }
+*/

@@ -9,10 +9,10 @@ import Foundation
 
 class CandidatesListViewModel: ObservableObject {
 	//MARK: -Private properties
-	private let repository: VitesseRepository
+	private let repository: VitesseCandidateRepository
 
 	//MARK: -Initialisation
-	init(repository: VitesseRepository) {
+	init(repository: VitesseCandidateRepository) {
 		self.repository = repository
 	}
 	

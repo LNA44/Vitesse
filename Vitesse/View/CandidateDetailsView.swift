@@ -15,7 +15,7 @@ struct CandidateDetailsView: View {
 	
 	init(candidate: Candidate) {
 		let keychain = VitesseKeychainService()
-		let repository = VitesseRepository(keychain: keychain)
+		let repository = VitesseCandidateRepository(keychain: keychain)
 		_viewModel = StateObject(wrappedValue: CandidateDetailsViewModel(repository: repository, candidate: candidate, id: candidate.id, email: candidate.email, phone: candidate.phone, linkedinURL: candidate.linkedinURL, note: candidate.note, firstName: candidate.firstName, lastName: candidate.lastName, isFavorite: candidate.isFavorite)) // Injection du repository dans le viewModel
 		self.candidate = candidate
 	}
@@ -75,7 +75,7 @@ struct CandidateDetailsView: View {
 						Text("Note")
 							.padding(.bottom, 10)
 						
-						TextEditor(text: Binding(//TextEditor n'accepte pas d'optionnel
+						TextEditor(text: Binding( //TextEditor n'accepte pas d'optionnel donc get set
 							get: { //on crée un binding personnalisé
 							viewModel.note ?? "" // VM->View : si candidate ou note = nil alors "" renvoyé
 						}, set: {
@@ -91,7 +91,6 @@ struct CandidateDetailsView: View {
 							.disabled(!editing)  // Désactive le TextEditor en mode lecture seule
 						
 						Spacer()
-						
 					}
 					.padding(.top, 10)
 					.padding(.leading, 30)

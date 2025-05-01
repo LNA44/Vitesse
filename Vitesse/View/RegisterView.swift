@@ -17,8 +17,9 @@ struct RegisterView: View {
 	
 	init() {
 		let keychain = VitesseKeychainService()
-		let repository = VitesseRepository(keychain: keychain)
-		_viewModel = StateObject(wrappedValue: RegisterViewModel(repository: repository)) // Injection du repository dans le viewModel
+		let authRepository = VitesseAuthenticationRepository(keychain: keychain)
+		let candidateRepository = VitesseCandidateRepository(keychain: keychain)
+		_viewModel = StateObject(wrappedValue: RegisterViewModel(authRepository: authRepository, candidateRepository: candidateRepository)) // Injection du repository dans le viewModel
 	}
 	
 	var body: some View {

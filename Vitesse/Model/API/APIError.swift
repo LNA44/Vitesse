@@ -7,21 +7,22 @@
 
 import Foundation
 
-enum APIError: LocalizedError {
+enum APIError: LocalizedError, Equatable {
 	case invalidURL
-	case unauthorized //token manquant ou faux
-	case noData
-	case invalidResponse //pas de type HTTPURLResponse
+	case invalidParameters
+	case invalidResponse
 	case httpError(statusCode: Int)
+	case noData
+	case unauthorized
 	case decodingError
-	
-	
 
-	var errorDescription: String {
+	var errorDescription: String? {
 		switch self {
 		case .invalidURL:
 			return "The URL is invalid."
-		case .invalidResponse: //response pas de type HTTPURLResponse
+		case .invalidParameters:
+			return "Invalid parameters provided."
+		case .invalidResponse: //response autre type que HTTPURLResponse
 			return "Invalid response from the server."
 		case .httpError(let statusCode):
 			return "HTTP error: \(statusCode)"

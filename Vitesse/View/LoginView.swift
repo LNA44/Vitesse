@@ -12,7 +12,7 @@ struct LoginView: View {
 	
 	init() {
 		let keychain = VitesseKeychainService()
-		let repository = VitesseRepository(keychain: keychain)
+		let repository = VitesseAuthenticationRepository(keychain: keychain)
 		_viewModel = StateObject(wrappedValue: LoginViewModel(repository: repository)) // Injection du repository dans le viewModel
 	}
 	
@@ -90,8 +90,8 @@ struct LoginView: View {
 			.padding(60)
 			.navigationBarBackButtonHidden(true)
 			.alert(isPresented: $viewModel.showingAlert) {
-						Alert(title: Text("Identifiant et mot de passe non reconnus"), message: Text(viewModel.errorMessage ?? ""), dismissButton: .default(Text("OK")))
-					}
+				Alert(title: Text("Identifiant et mot de passe non reconnus"), message: Text(viewModel.errorMessage ?? ""), dismissButton: .default(Text("OK")))
+			}
 		}
 		
 	}
