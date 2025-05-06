@@ -53,20 +53,19 @@ struct CandidatesListView: View {
 						editing = true
 					}) {
 						Text("Edit")
-							.font(.custom("Roboto_SemiCondensed-Light", size: 18))
-							.foregroundColor(Color("Accent"))
+							.foregroundColor(Color("AppAccentColor"))
 					}
 				}
 				
 				ToolbarItem(placement: .principal) {
 						Text("Candidats")
-							.font(.custom("Roboto_Condensed-Italic", size: 20)) // Utiliser ta police personnalisée
-							.foregroundColor(.black) // Exemple de couleur
+							.font(.custom("Roboto_Condensed-Italic", size: 20))
+							.foregroundColor(.black)
 					}
 				
 				ToolbarItem(placement: .navigationBarTrailing) {
 					Image(systemName: viewModel.filterFavorites ? "star.fill" : "star")
-						.foregroundColor(Color("Accent"))
+						.foregroundColor(Color("AppAccentColor"))
 						.onTapGesture {
 							viewModel.filterFavorites.toggle()
 						}
@@ -76,9 +75,14 @@ struct CandidatesListView: View {
 					Button("Cancel") {
 						editing = false
 					}
-					.font(.custom("Roboto_SemiCondensed-Light", size: 18))
-					.foregroundColor(Color("Accent"))
+					.foregroundColor(Color("AppAccentColor"))
 				}
+				
+				ToolbarItem(placement: .principal) {
+						Text("Candidats")
+							.font(.custom("Roboto_Condensed-Italic", size: 20))
+							.foregroundColor(.black) 
+					}
 				
 				ToolbarItem(placement: .navigationBarTrailing) {
 					Button("Delete") {
@@ -91,13 +95,13 @@ struct CandidatesListView: View {
 							editing = false
 						}
 					}
-					.font(.custom("Roboto_SemiCondensed-Light", size: 18))
 					.disabled(viewModel.selectedCandidates.isEmpty)
-					.foregroundColor(Color("Accent"))
+					.foregroundColor(Color("AppAccentColor"))
 				}
 			}
 		}
-		.background(Color("SecondaryColor"))
+		.font(.custom("Roboto_SemiCondensed-Light", size: 18))
+		.background(Color("AppSecondaryColor"))
 	}
 }
 

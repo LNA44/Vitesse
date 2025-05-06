@@ -11,7 +11,7 @@
 		<string>Roboto_SemiCondensed-Light.ttf</string>
 	</array>
 	<key>CFBundleIdentifier</key>
-	<string>com.example.Vitesse</string>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 	<key>CFBundleVersion</key>
 	<string>1.0</string>
 	<key>CFBundleShortVersionString</key>

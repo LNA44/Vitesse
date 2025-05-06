@@ -11,6 +11,7 @@ import SwiftUI
 struct VitesseApp: App {
 	@StateObject private var viewModel = VitesseAppViewModel()
 	let keychain = VitesseKeychainService()
+	@State private var showAccountCreatedMessage = false
 
 	init() {
 		_ = keychain.deleteToken(key: Constantes.Authentication.tokenKey)
@@ -18,7 +19,7 @@ struct VitesseApp: App {
 	
     var body: some Scene {
         WindowGroup {
-			LoginView()
+			LoginView(showAccountCreatedMessage: $showAccountCreatedMessage)
         }
     }
 }

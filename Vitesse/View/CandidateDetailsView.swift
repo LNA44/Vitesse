@@ -38,7 +38,7 @@ struct CandidateDetailsView: View {
 								}
 							}) {
 								Image(systemName: viewModel.isFavorite == true ? "star.fill" : "star")
-									.foregroundColor(Color("Accent"))
+									.foregroundColor(Color("AppAccentColor"))
 							}
 						}
 						.padding(.bottom, 50)
@@ -48,17 +48,14 @@ struct CandidateDetailsView: View {
 								Text("Phone")
 								Text(viewModel.phone ?? "No candidate phone number")
 							}
-							.font(.custom("Roboto_SemiCondensed-Light", size: 16))
 							
 							HStack (spacing: 30) {
 								Text("Email")
 								Text(viewModel.email)
 							}
-							.font(.custom("Roboto_SemiCondensed-Light", size: 16))
 							
 							HStack (spacing: 50){
 								Text("LinkedIn")
-									.font(.custom("Roboto_SemiCondensed-Light", size: 16))
 									
 								Button(action: {
 									if let validURL = viewModel.convertStringToURL(viewModel.linkedinURL) {
@@ -71,7 +68,7 @@ struct CandidateDetailsView: View {
 								.foregroundColor(Color.white)
 								.padding()
 								.frame(width: 150, height: 30)
-								.background(Color("Accent"))
+								.background(Color("AppAccentColor"))
 								.cornerRadius(10)
 							}
 							.padding(.bottom, 25)
@@ -79,12 +76,11 @@ struct CandidateDetailsView: View {
 						
 						Text("Note")
 							.padding(.bottom, 10)
-							.font(.custom("Roboto_SemiCondensed-Light", size: 16))
 
 						
 						ZStack {
 							Rectangle()
-								.fill(Color("SecondaryColor"))
+								.fill(Color("AppSecondaryColor"))
 								.frame(width: 320, height: 200)
 							
 							TextEditor(text: Binding( //TextEditor n'accepte pas d'optionnel donc get set
@@ -94,7 +90,7 @@ struct CandidateDetailsView: View {
 									viewModel.note = $0 // View->VM : ce que rentre l'utilisateur envoyé au VM
 								}))
 							.scrollContentBackground(.hidden) // désactive le fond interne du texteField
-							.background(Color("SecondaryColor"))
+							.background(Color("AppSecondaryColor"))
 							.padding()
 							.font(.custom("Roboto_SemiCondensed-Light", size: 14))
 							.frame(width: 320, height: 200)
@@ -112,6 +108,7 @@ struct CandidateDetailsView: View {
 					.padding(.top, 10)
 					.padding(.leading, 30)
 					.padding(.trailing, 30)
+					.font(.custom("Roboto_SemiCondensed-Light", size: 16))
 				} else {
 					VStack(alignment: .leading) {
 						HStack {
@@ -122,7 +119,6 @@ struct CandidateDetailsView: View {
 						.padding(.bottom, 20)
 
 						Text("Phone")
-							.font(.custom("Roboto_SemiCondensed-Light", size: 16))
 							.padding(.bottom, 5)
 						
 						EntryFieldView(placeHolder: "", field: Binding(get: { //EntryField ne prend pas d'optionnel
@@ -136,14 +132,12 @@ struct CandidateDetailsView: View {
 						isSecure: false, prompt: "")
 						
 						Text("Email")
-							.font(.custom("Roboto_SemiCondensed-Light", size: 16))
 							.padding(.bottom, 5)
 						
 						EntryFieldView(placeHolder: "", field: $viewModel.email,
 						isSecure: false, prompt: "")
 						
 						Text("LinkedIn")
-							.font(.custom("Roboto_SemiCondensed-Light", size: 16))
 							.padding(.bottom, 5)
 						
 						EntryFieldView(placeHolder: "", field: Binding(get: {
@@ -154,7 +148,6 @@ struct CandidateDetailsView: View {
 						isSecure: false, prompt: "")
 						
 						Text("Note")
-							.font(.custom("Roboto_SemiCondensed-Light", size: 16))
 							.padding(.bottom, 10)
 						
 						ZStack {
@@ -181,6 +174,7 @@ struct CandidateDetailsView: View {
 					.padding(.top, 10)
 					.padding(.leading, 30)
 					.padding(.trailing, 30)
+					.font(.custom("Roboto_SemiCondensed-Light", size: 16))
 				}
 			}.onAppear {
 				// Met à jour le candidat sélectionné dans le VM
@@ -193,7 +187,7 @@ struct CandidateDetailsView: View {
 							dismiss() //ferme la vue et retourne à la vue précédente
 						}) {
 							Image(systemName: "chevron.left")
-								.foregroundColor(Color("Accent"))
+								.foregroundColor(Color("AppAccentColor"))
 						}
 					}
 					
@@ -201,15 +195,13 @@ struct CandidateDetailsView: View {
 						Button(action: {editing = true}){
 							Text("Edit")
 						}
-						.font(.custom("Roboto_SemiCondensed-Light", size: 18))
-						.foregroundColor(Color("Accent"))
+						.foregroundColor(Color("AppAccentColor"))
 					}
 				} else {
 					ToolbarItem(placement: .navigationBarLeading) {
 						Button(action: {editing = false}){
 							Text("Cancel")
-								.font(.custom("Roboto_SemiCondensed-Light", size: 18))
-								.foregroundColor(Color("Accent"))
+								.foregroundColor(Color("AppAccentColor"))
 						}
 					}
 					
@@ -222,15 +214,15 @@ struct CandidateDetailsView: View {
 						}) {
 							Text("Done")
 						}
-						.font(.custom("Roboto_SemiCondensed-Light", size: 18))
-						.foregroundColor(Color("Accent"))
+						.foregroundColor(Color("AppAccentColor"))
 						.disabled(candidate.email.isEmpty) // Désactive le bouton si l'email est vide
 						.opacity(candidate.email.isEmpty ? 0.5 : 1.0) // Rend le bouton plus opaque si l'email est vide
 					}
 				}
 			}
+			.font(.custom("Roboto_SemiCondensed-Light", size: 18))
 			.navigationBarBackButtonHidden(true)
-			.background(Color("SecondaryColor"))
+			.background(Color("AppSecondaryColor"))
 		}
 	
 }

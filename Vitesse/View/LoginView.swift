@@ -9,11 +9,14 @@ import SwiftUI
 struct LoginView: View {
 	@StateObject var viewModel: LoginViewModel
 	@State private var isNavigationActive = false //obligatoire car on ne peut pas mettre un bouton (action) dans une navigationlink
+	@Binding var showAccountCreatedMessage: Bool
+	@State private var showRegisteredNotification = false
 	
-	init() {
+	init(showAccountCreatedMessage: Binding<Bool>) {
 		let keychain = VitesseKeychainService()
 		let repository = VitesseAuthenticationRepository(keychain: keychain)
 		_viewModel = StateObject(wrappedValue: LoginViewModel(repository: repository)) // Injection du repository dans le viewModel
+		_showAccountCreatedMessage = showAccountCreatedMessage // Initialisation du @Binding
 	}
 	
 	var body: some View {
@@ -60,35 +63,35 @@ struct LoginView: View {
 								.frame(width: 100, height: 12)
 								.font(.custom("Roboto_SemiCondensed-Light", size: 22))
 								.padding()
-								.foregroundColor(Color("Accent"))
+								.foregroundColor(Color("AppAccentColor"))
 								.background(Color.white)
 								.overlay(
 									Rectangle()
-										.stroke(Color("Accent"), lineWidth: 2)
+										.stroke(Color("AppAccentColor"), lineWidth: 2)
 								)
 								.shadow(radius: 5)
 							
-						}.opacity(viewModel.isSignUpComplete ? 1 : 0.6)
+						}
+						.opacity(viewModel.isSignUpComplete ? 1 : 0.6)
 						//1 if true else 0.6
-							.disabled(!viewModel.isSignUpComplete)
+						.disabled(!viewModel.isSignUpComplete)
 						//désactive : plus d'interaction possible
 						
-						NavigationLink(destination: CandidatesListView(), isActive: $isNavigationActive
-						) {
-							EmptyView() // Un lien invisible qui se déclenche quand isNavigationActive devient true
+						.navigationDestination(isPresented: $isNavigationActive) {
+							CandidatesListView()
 						}
 						
 						NavigationLink(destination: RegisterView()) {
 							Text("Register")
 								.frame(width: 100, height: 12)
 								.font(.custom("Roboto_SemiCondensed-Light", size: 22))
-								.foregroundColor(Color("Accent"))
+								.foregroundColor(Color("AppAccentColor"))
 								.padding()
 								.foregroundColor(.blue)
 								.background(Color.white)
 								.overlay(
 									Rectangle()
-										.stroke(Color("Accent"), lineWidth: 2)
+										.stroke(Color("AppAccentColor"), lineWidth: 2)
 								)
 								.shadow(radius: 5)
 						}
@@ -99,6 +102,30 @@ struct LoginView: View {
 				.alert(isPresented: $viewModel.showingAlert) {
 					Alert(title: Text("Identifiant et mot de passe non reconnus"), message: Text(viewModel.errorMessage ?? ""), dismissButton: .default(Text("OK")))
 				}
+				if showRegisteredNotification {
+					VStack {
+						Spacer()
+						Text("Account created successfully!")
+							.foregroundColor(.white)
+							.fontWeight(.bold)
+							.font(.custom("Roboto_SemiCondensed-Light", size: 18))
+							.padding()
+							.background(Color("AppAccentColor"))
+							.cornerRadius(8)
+							.shadow(radius: 10)
+							.transition(.move(edge: .bottom))
+							.onAppear {
+								DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+									showRegisteredNotification = false
+									showAccountCreatedMessage = false 
+								}
+							}
+					}
+					.padding()
+				}
+			}
+			.onChange(of: showAccountCreatedMessage) {
+				showRegisteredNotification = true
 			}
 		}
 	}

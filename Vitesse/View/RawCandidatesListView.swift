@@ -26,7 +26,7 @@ struct RawCandidatesListView: View {
 					viewModel.toggleSelection(candidate: candidate)
 				}) {
 					Image(systemName: viewModel.selectedCandidates.contains(candidate.idUUID) ? "checkmark.circle.fill" : "circle")
-						.foregroundColor(Color("Accent"))
+						.foregroundColor(Color("AppAccentColor"))
 				}
 
 				Text("\(candidate.firstName) \(candidate.lastName)")

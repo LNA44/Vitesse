@@ -14,6 +14,7 @@ struct RegisterView: View {
 	@State private var email: String = ""
 	@State private var password: String = ""
 	@State private var isNavigationActive = false
+	@State var showAccountCreatedMessage = false
 	
 	init() {
 		let keychain = VitesseKeychainService()
@@ -33,35 +34,30 @@ struct RegisterView: View {
 					.padding(.bottom, 40)
 				
 				Text("First Name")
-					.font(.custom("Roboto_SemiCondensed-Light", size: 16))
 					.frame(maxWidth: .infinity, alignment: .leading)
 				
 				EntryFieldView(placeHolder: "", field: $viewModel.firstName, isSecure: false, prompt: viewModel.firstNamePrompt)
 					.padding(.bottom, 5)
 				
 				Text("Last Name")
-					.font(.custom("Roboto_SemiCondensed-Light", size: 16))
 					.frame(maxWidth: .infinity, alignment: .leading)
 				
 				EntryFieldView(placeHolder: "", field: $viewModel.lastName, isSecure: false, prompt: viewModel.lastNamePrompt)
 					.padding(.bottom, 5)
 				
 				Text("Email")
-					.font(.custom("Roboto_SemiCondensed-Light", size: 16))
 					.frame(maxWidth: .infinity, alignment: .leading)
 				
 				EntryFieldView(placeHolder: "", field: $viewModel.email, isSecure: false, prompt: viewModel.emailPrompt)
 					.padding(.bottom, 5)
 				
 				Text("Password")
-					.font(.custom("Roboto_SemiCondensed-Light", size: 16))
 					.frame(maxWidth: .infinity, alignment: .leading)
 				
 				EntryFieldView(placeHolder: "", field: $viewModel.password, isSecure: true, prompt: viewModel.passwordPrompt)
 					.padding(.bottom, 5)
 				
 				Text("Confirm password")
-					.font(.custom("Roboto_SemiCondensed-Light", size: 16))
 					.frame(maxWidth: .infinity, alignment: .leading)
 				
 				EntryFieldView(placeHolder: "", field: $viewModel.confirmPassword, isSecure: true, prompt: viewModel.verifyPasswordPrompt)
@@ -70,20 +66,20 @@ struct RegisterView: View {
 				Button(action: {
 					isNavigationActive = true
 					Task {
-						print("on est dans la task")
 						await viewModel.addUser()
 						await viewModel.addCandidate()
+						showAccountCreatedMessage = true
 					}
 				}) {
 					Text("Create")
 						.frame(width: 100, height: 12)
 						.font(.custom("Roboto_SemiCondensed-Light", size: 22))
 						.padding()
-						.foregroundColor(Color("Accent"))
+						.foregroundColor(Color("AppAccentColor"))
 						.background(.white)
 						.overlay(
 							Rectangle()
-								.stroke(Color("Accent"), lineWidth: 2)
+								.stroke(Color("AppAccentColor"), lineWidth: 2)
 						)
 						.shadow(radius: 5)
 				}
@@ -92,11 +88,11 @@ struct RegisterView: View {
 				.disabled(!viewModel.isSignUpComplete)
 				//désactive : plus d'interaction possible
 				
-				NavigationLink(destination: LoginView(), isActive: $isNavigationActive
-				) {
-					EmptyView() // Un lien invisible qui se déclenche quand isNavigationActive devient true
+				.navigationDestination(isPresented: $isNavigationActive) {
+					LoginView(showAccountCreatedMessage: $showAccountCreatedMessage)
 				}
 			}
+			.font(.custom("Roboto_SemiCondensed-Light", size: 16))
 			.padding(60)
 			.navigationBarBackButtonHidden(true)
 		}

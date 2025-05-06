@@ -22,14 +22,14 @@ struct EntryFieldView: View {
 					SecureField(placeHolder, text: $field).autocapitalization(.none)
 						.focused($isFocused)
 						.frame(height: 20)
-						.tint(Color("PrimaryColor"))
+						.tint(Color("AppPrimaryColor"))
 						.onChange(of: field) {
 						}
 				} else {
 					TextField(placeHolder, text: $field).autocapitalization(.none)
 						.focused($isFocused)
 						.frame(height: 20)
-						.tint(Color("PrimaryColor"))
+						.tint(Color("AppPrimaryColor"))
 						.onChange(of: field) {
 						}
 				}
@@ -39,7 +39,7 @@ struct EntryFieldView: View {
 				ZStack {
 					Color(UIColor.secondarySystemBackground)
 					Rectangle()
-						.stroke(isFocused ? Color("PrimaryColor") : Color.gray.opacity(0.5), lineWidth: 1)
+						.stroke(isFocused ? Color("AppPrimaryColor") : Color.gray.opacity(0.5), lineWidth: 1)
 						.animation(.easeInOut(duration: 0.2), value: isFocused)
 				}
 			)
