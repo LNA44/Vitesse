@@ -13,25 +13,38 @@ struct EntryFieldView: View {
 	var isSecure: Bool
 	var prompt: String
 	
+	@FocusState private var isFocused: Bool //définit si champ actif ou non, pour animations
+	
     var body: some View {
 		VStack(alignment:.leading) {
 			HStack {
 				if isSecure {
 					SecureField(placeHolder, text: $field).autocapitalization(.none)
+						.focused($isFocused)
 						.frame(height: 20)
+						.tint(Color("PrimaryColor"))
 						.onChange(of: field) {
 						}
 				} else {
 					TextField(placeHolder, text: $field).autocapitalization(.none)
+						.focused($isFocused)
 						.frame(height: 20)
+						.tint(Color("PrimaryColor"))
 						.onChange(of: field) {
 						}
 				}
 			}
 			.padding()
-			.background(Color(UIColor.secondarySystemBackground))
-			.cornerRadius(8)
+			.background(
+				ZStack {
+					Color(UIColor.secondarySystemBackground)
+					Rectangle()
+						.stroke(isFocused ? Color("PrimaryColor") : Color.gray.opacity(0.5), lineWidth: 1)
+						.animation(.easeInOut(duration: 0.2), value: isFocused)
+				}
+			)
 			Text(prompt)
+				.font(.custom("Roboto_SemiCondensed-Light", size: 10))
 				.font(.caption)
 		}
     }

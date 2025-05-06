@@ -16,6 +16,7 @@ struct RawCandidatesListView: View {
 		if editing == false {
 			HStack {
 				Text("\(candidate.firstName) \(candidate.lastName)")
+					.font(.custom("Roboto_SemiCondensed-Light", size: 18))
 				Spacer()
 				candidate.isFavorite ? Image(systemName: "star.fill") : Image(systemName: "star")
 			}
@@ -25,14 +26,17 @@ struct RawCandidatesListView: View {
 					viewModel.toggleSelection(candidate: candidate)
 				}) {
 					Image(systemName: viewModel.selectedCandidates.contains(candidate.idUUID) ? "checkmark.circle.fill" : "circle")
+						.foregroundColor(Color("Accent"))
 				}
 
 				Text("\(candidate.firstName) \(candidate.lastName)")
+					.font(.custom("Roboto_SemiCondensed-Light", size: 18))
 				Spacer()
 				candidate.isFavorite ? Image(systemName: "star.fill") : Image(systemName: "star")
 			}
 		}
     }
+	
 }
 
 /*#Preview {
