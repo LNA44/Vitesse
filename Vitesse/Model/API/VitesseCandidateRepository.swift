@@ -23,9 +23,7 @@ struct VitesseCandidateRepository {
 		let endpoint = try APIService.createEndpoint(path: .fetchCandidatesOrAddCandidate)
 		var request = APIService.createRequest(jsonData: nil, endpoint: endpoint, method: .get)
 		
-		guard let token = keychain.getToken(key: Constantes.Candidate.tokenKey) else {
-			throw APIError.unauthorized
-		}
+		let token = try keychain.getToken(key: Constantes.Candidate.tokenKey)
 		
 		request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
 
@@ -76,9 +74,7 @@ struct VitesseCandidateRepository {
 		let jsonData = try APIService.serializeParameters(parameters: nonNilSafeParameters)
 		var request = APIService.createRequest(parameters: nonNilSafeParameters, jsonData: jsonData, endpoint: endpoint, method: .post)
 		
-		guard let token = keychain.getToken(key: Constantes.Candidate.tokenKey) else {
-			throw APIError.unauthorized
-		}
+		let token = try keychain.getToken(key: Constantes.Candidate.tokenKey)
 		
 		request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
 		
@@ -103,9 +99,7 @@ struct VitesseCandidateRepository {
 		let jsonData = try APIService.serializeParameters(parameters: nonNilSafeParameters)
 		var request = APIService.createRequest(parameters: nonNilSafeParameters, jsonData: jsonData, endpoint: endpoint, method: .put)
 		
-		guard let token = keychain.getToken(key: Constantes.Candidate.tokenKey) else {
-			throw APIError.unauthorized
-		}
+		let token = try keychain.getToken(key: Constantes.Candidate.tokenKey)
 		
 		request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
 		
@@ -120,9 +114,7 @@ struct VitesseCandidateRepository {
 	func deleteCandidate(id: String) async throws -> Bool {
 		let endpoint = try APIService.createEndpoint(path: .fetchOrUpdateOrDeleteCandidateWithID(id: id))
 		var request = APIService.createRequest(jsonData: nil, endpoint: endpoint, method: .delete)
-		guard let token = keychain.getToken(key: Constantes.Candidate.tokenKey) else {
-			throw APIError.unauthorized
-		}
+		let token = try keychain.getToken(key: Constantes.Candidate.tokenKey)
 		
 		request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
 		_ = try await APIService.fetch(request: request, allowEmptyData: true)
@@ -133,9 +125,7 @@ struct VitesseCandidateRepository {
 	func addCandidateToFavorites(id: String) async throws -> Candidate { //renvoie la valeur inversée de isFavorite
 		let endpoint = try APIService.createEndpoint(path: .candidateWithIDInFavorites(id: id))
 		var request = APIService.createRequest(jsonData: nil, endpoint: endpoint, method: .post)
-		guard let token = keychain.getToken(key: Constantes.Candidate.tokenKey) else {
-			throw APIError.unauthorized
-		}
+		let token = try keychain.getToken(key: Constantes.Candidate.tokenKey) 
 		
 		request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
 		let candidate = try await APIService.fetchAndDecode(Candidate.self, request: request)

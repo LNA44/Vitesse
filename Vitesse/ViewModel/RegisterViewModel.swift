@@ -87,7 +87,9 @@ class RegisterViewModel: ObservableObject {
 		do {
 			_ = try await authRepository.login(email: email, password: password) //permet de récupérer le token utile à addCandidate
 			_ = try await candidateRepository.addCandidate(email: email, firstName: firstName, lastName: lastName)
-			_ = VitesseKeychainService().deleteToken(key: "authToken")
+			_ = try VitesseKeychainService().deleteToken(key: "authToken")
+		} catch let error as VitesseKeychainService.KeychainError {
+			errorMessage = error.errorKeychainDescription
 		} catch let error as APIError {
 			errorMessage = error.errorDescription
 		} catch {

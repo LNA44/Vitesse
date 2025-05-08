@@ -53,9 +53,10 @@ class LoginViewModel: ObservableObject {
 		do {
 			_ = try await repository.login(email: email, password: password)
 			return true
-			//self.onLoginSucceed(true, isAdmin) //exécute la closure du callback dans VitesseAppViewModel
+		} catch let error as VitesseKeychainService.KeychainError {
+			errorMessage = error.errorKeychainDescription
+			return false
 		} catch let error as APIError {
-			print("erreur d'API")
 			errorMessage = error.errorDescription
 			showingAlert = true
 			return false

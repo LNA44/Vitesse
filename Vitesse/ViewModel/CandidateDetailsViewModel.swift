@@ -59,6 +59,8 @@ class CandidateDetailsViewModel: ObservableObject {
 		candidate.phone = phone
 		do {
 			_ = try await repository.updateCandidate(id: id, email: email, note: note, linkedinURL: linkedinURL, firstName: firstName, lastName: lastName, phone: phone)
+		} catch let error as VitesseKeychainService.KeychainError {
+			errorMessage = error.errorKeychainDescription
 		} catch let error as APIError {
 			errorMessage = error.errorDescription
 		} catch {
@@ -74,6 +76,8 @@ class CandidateDetailsViewModel: ObservableObject {
 			let updatedCandidate = try await repository.addCandidateToFavorites(id: candidate.id)
 			self.candidate = updatedCandidate
 			self.isFavorite = updatedCandidate.isFavorite //affecte la valeur à la propriété
+		} catch let error as VitesseKeychainService.KeychainError {
+			errorMessage = error.errorKeychainDescription
 		} catch let error as APIError {
 			errorMessage = error.errorDescription
 			showAlert = true

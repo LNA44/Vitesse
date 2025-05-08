@@ -44,6 +44,8 @@ class CandidatesListViewModel: ObservableObject {
 		do {
 			let candidates = try await repository.fetchCandidates()
 			self.candidates = candidates
+		} catch let error as VitesseKeychainService.KeychainError {
+			errorMessage = error.errorKeychainDescription
 		} catch let error as APIError {
 			errorMessage = error.errorDescription
 		} catch {
@@ -55,6 +57,8 @@ class CandidatesListViewModel: ObservableObject {
 	func deleteCandidate(id: String) async {
 		do {
 			_ = try await repository.deleteCandidate(id: id)
+		} catch let error as VitesseKeychainService.KeychainError {
+			errorMessage = error.errorKeychainDescription
 		} catch let error as APIError {
 			errorMessage = error.errorDescription
 			showAlert = true

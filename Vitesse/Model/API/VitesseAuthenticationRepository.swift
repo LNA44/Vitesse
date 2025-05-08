@@ -37,7 +37,7 @@ struct VitesseAuthenticationRepository {
 			throw APIError.noData
 		}
 		//Stockage du token
-		_ = keychain.saveToken(token: unwrappedResponseJSON.token, key: Constantes.Authentication.tokenKey)
+		_ = try keychain.saveToken(token: unwrappedResponseJSON.token, key: Constantes.Authentication.tokenKey)
 		
 		return isAdmin
 	}

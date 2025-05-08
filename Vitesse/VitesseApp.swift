@@ -10,16 +10,36 @@ import SwiftUI
 @main
 struct VitesseApp: App {
 	@StateObject private var viewModel = VitesseAppViewModel()
-	let keychain = VitesseKeychainService()
+	private let keychain = VitesseKeychainService()
 	@State private var showAccountCreatedMessage = false
+	@Environment(\.scenePhase) private var scenePhase  // Observe l'état de l'application (active, background, inactive)
 
-	init() {
-		_ = keychain.deleteToken(key: Constantes.Authentication.tokenKey)
-	}
+	init() {}
 	
     var body: some Scene {
         WindowGroup {
 			LoginView(showAccountCreatedMessage: $showAccountCreatedMessage)
+				.alert(isPresented: $viewModel.showAlert) {
+					Alert(
+						title: Text("Error"),
+						message: Text(viewModel.errorMessage ?? "An unknown error happened"),
+						dismissButton: .default(Text("OK"))
+					)
+				}
         }
+		.onChange(of: scenePhase) {
+			switch scenePhase {
+			case .background, .active:
+				do {
+					// Supprime le token lorsque l'app passe en arrière-plan ou se lance
+					_ = try keychain.deleteToken(key: Constantes.Authentication.tokenKey)
+				} catch {
+					viewModel.showAlert = true
+					viewModel.errorMessage = "Erreur lors de la suppression du token : \(error)" //transmis à AuthenticationView pour afficher alerte
+				}
+			default:
+				break
+			}
+		}
     }
 }
