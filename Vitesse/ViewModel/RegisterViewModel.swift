@@ -99,21 +99,21 @@ class RegisterViewModel: ObservableObject {
 	
 	func isFirstNameValid() -> Bool {
 		// criterias here : http://regexlib.com
-		let firstNameTest = NSPredicate(format: "SELF MATCHES %@","^([^ \\x21-\\x26\\x28-\\x2C\\x2E-\\x40\\x5B-\\x60\\x7B-\\xAC\\xAE-\\xBF\\xF7\\xFE]+)$" )
+		let firstNameTest = NSPredicate(format: "SELF MATCHES %@", Constantes.Regex.firstName)
 		//Accepte les accents
 		return firstNameTest.evaluate(with: firstName)
 	}
 	
 	func isLastNameValid() -> Bool {
 		// criterias here : http://regexlib.com
-		let lastNameTest = NSPredicate(format: "SELF MATCHES %@","^([^ \\x21-\\x26\\x28-\\x2C\\x2E-\\x40\\x5B-\\x60\\x7B-\\xAC\\xAE-\\xBF\\xF7\\xFE]+)$" )
+		let lastNameTest = NSPredicate(format: "SELF MATCHES %@", Constantes.Regex.lastName)
 		//Accepte les accents et les tirets
 		return lastNameTest.evaluate(with: lastName)
 	}
 	
 	func isEmailValid() -> Bool {
 		// criterias here : http://regexlib.com
-		let emailTest = NSPredicate(format: "SELF MATCHES %@","^([0-9a-zA-Z]([-.\\w]*[0-9a-zA-Z])*@(([0-9a-zA-Z])+([-\\w]*[0-9a-zA-Z])*\\.)+[a-zA-Z]{2,9})$" )
+		let emailTest = NSPredicate(format: "SELF MATCHES %@", Constantes.Regex.email)
 		/*Caractères précédants le @: 1 caractère alphanumérique (chiffre ou lettre), tiret point et underscores ok si suivies d'un caractère alphanumérique
 		Caractères suivants le @: 1 ou plusieurs caractères alphanumériques et tirets ou underscores (domaine de l'email)
 		Caractères après le point : entre 2 et 9 lettres (domaine de premier niveau : .com, .org,...)*/
@@ -122,7 +122,7 @@ class RegisterViewModel: ObservableObject {
 	
 	func isPasswordValid() -> Bool {
 		// criterias here : http://regexlib.com
-		let passwordTest = NSPredicate(format: "SELF MATCHES %@","^(?=.*[0-9]+.*)(?=.*[a-zA-Z]+.*)[0-9a-zA-Z]{6,}$" )
+		let passwordTest = NSPredicate(format: "SELF MATCHES %@", Constantes.Regex.password)
 		//Au moins 1 chiffre, au moins une lettre, au moins 6 caractères
 		return passwordTest.evaluate(with: password)
 	}

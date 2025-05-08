@@ -69,14 +69,14 @@ class LoginViewModel: ObservableObject {
 	
 	func isPasswordValid() -> Bool {
 		// criterias here : http://regexlib.com
-		let passwordTest = NSPredicate(format: "SELF MATCHES %@","^(?=.*[0-9]+.*)(?=.*[a-zA-Z]+.*)[0-9a-zA-Z]{6,}$" )
+		let passwordTest = NSPredicate(format: "SELF MATCHES %@", Constantes.Regex.password)
 		//Au moins 1 chiffre, au moins une lettre, au moins 6 caractères
 		return passwordTest.evaluate(with: password)
 	}
 	
 	func isEmailValid() -> Bool {
 		// criterias here : http://regexlib.com
-		let emailTest = NSPredicate(format: "SELF MATCHES %@","^([0-9a-zA-Z]([-.\\w]*[0-9a-zA-Z])*@(([0-9a-zA-Z])+([-\\w]*[0-9a-zA-Z])*\\.)+[a-zA-Z]{2,9})$" )
+		let emailTest = NSPredicate(format: "SELF MATCHES %@", Constantes.Regex.email)
 		/*Caractères précédants le @: 1 caractère alphanumérique (chiffre ou lettre), tiret point et underscores ok si suivies d'un caractère alphanumérique
 		Caractères suivants le @: 1 ou plusieurs caractères alphanumériques et tirets ou underscores (domaine de l'email)
 		Caractères après le point : entre 2 et 9 lettres (domaine de premier niveau : .com, .org,...)*/
