@@ -67,7 +67,7 @@ class VitesseAPIService {
 	//requête
 	func createRequest(parameters: [String: Any]? = nil, jsonData: Data?, endpoint: URL, method: Method) -> URLRequest { //modif parametersNeeded -> parameters
 		var request = URLRequest(url: endpoint)
-		request.timeoutInterval = 5 // délai max d'attente de 10 secondes
+		request.timeoutInterval = 5 // délai max d'attente de 5 secondes
 		request.httpMethod = method.rawValue
 		if parameters != nil {
 			request.setValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -81,6 +81,7 @@ class VitesseAPIService {
 	//appel réseau
 	func fetch(request: URLRequest, allowEmptyData: Bool = false) async throws -> Data {
 		let (data, response) = try await session.data(for: request)
+		
 		if !allowEmptyData && data.isEmpty {
 			throw APIError.noData
 		}
