@@ -7,7 +7,7 @@
 
 import Foundation
 
-class LoginViewModel: ObservableObject {
+class LoginViewModel: BaseViewModel {
 	
 	//MARK: - Private properties
 	private let repository: VitesseAuthenticationRepository
@@ -22,8 +22,8 @@ class LoginViewModel: ObservableObject {
 	@Published var email: String = ""
 	@Published var password: String = ""
 	@Published var isAdmin: Bool = false
-	@Published var errorMessage: String? = nil
-	@Published var showingAlert: Bool = false
+	//@Published var errorMessage: String? = nil
+	//@Published var showingAlert: Bool = false
 	//var onLoginSucceed: ((Bool, Bool) -> Void)  // Callback avec isLogged et isAdmin
 	
 	var isSignUpComplete: Bool {
@@ -53,16 +53,8 @@ class LoginViewModel: ObservableObject {
 		do {
 			_ = try await repository.login(email: email, password: password)
 			return true
-		} catch let error as VitesseKeychainService.KeychainError {
-			errorMessage = error.errorKeychainDescription
-			return false
-		} catch let error as APIError {
-			errorMessage = error.errorDescription
-			showingAlert = true
-			return false
 		} catch {
-			errorMessage = "Une erreur inconnue est survenue : \(error.localizedDescription)"
-			showingAlert = true
+			self.handleError(error)
 			return false
 		}
 	}

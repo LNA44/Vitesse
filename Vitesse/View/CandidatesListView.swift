@@ -45,6 +45,9 @@ struct CandidatesListView: View {
 		.task {
 			await viewModel.fetchCandidates()
 		}
+		.alert(isPresented: $viewModel.showAlert) {
+			Alert(title: Text("Error"), message: Text(viewModel.errorMessage ?? ""), dismissButton: .default(Text("OK")))
+		}
 		
 		.toolbar {
 			if editing == false {

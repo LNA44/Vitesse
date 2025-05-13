@@ -7,7 +7,7 @@
 
 import Foundation
 
-class RegisterViewModel: ObservableObject {
+class RegisterViewModel: BaseViewModel {
 	//MARK: -Private properties
 	private let authRepository: VitesseAuthenticationRepository
 	private let candidateRepository: VitesseCandidateRepository
@@ -24,7 +24,7 @@ class RegisterViewModel: ObservableObject {
 	@Published var confirmPassword: String = ""
 	@Published var firstName: String = ""
 	@Published var lastName: String = ""
-	@Published var errorMessage: String?
+	//@Published var errorMessage: String?
 	@Published var transferMessage: String = ""
 	
 	var isSignUpComplete: Bool {
@@ -75,10 +75,8 @@ class RegisterViewModel: ObservableObject {
 		do {
 			_ = try await authRepository.register(email: email, password: password, firstName: firstName, lastName: lastName)
 			transferMessage = "Successfully registered"
-		} catch let error as APIError {
-			errorMessage = error.errorDescription
 		} catch {
-			errorMessage = "Une erreur inconnue est survenue : \(error.localizedDescription)"
+			self.handleErrorWithoutKeychain(error)
 		}
 	}
 	
@@ -88,12 +86,8 @@ class RegisterViewModel: ObservableObject {
 			_ = try await authRepository.login(email: email, password: password) //permet de récupérer le token utile à addCandidate
 			_ = try await candidateRepository.addCandidate(email: email, firstName: firstName, lastName: lastName)
 			_ = try VitesseKeychainService().deleteToken(key: "authToken")
-		} catch let error as VitesseKeychainService.KeychainError {
-			errorMessage = error.errorKeychainDescription
-		} catch let error as APIError {
-			errorMessage = error.errorDescription
 		} catch {
-			errorMessage = "Une erreur inconnue est survenue : \(error.localizedDescription)"
+			self.handleError(error)
 		}
 	}
 	

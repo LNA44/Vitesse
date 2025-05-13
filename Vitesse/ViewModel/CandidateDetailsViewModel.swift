@@ -7,7 +7,7 @@
 
 import Foundation
 
-class CandidateDetailsViewModel: ObservableObject {
+class CandidateDetailsViewModel: BaseViewModel {
 	//MARK: -Private properties
 	private let repository: VitesseCandidateRepository
 	private let candidateID: String
@@ -24,7 +24,7 @@ class CandidateDetailsViewModel: ObservableObject {
 	}
 	
 	//MARK: -Outputs
-	@Published var showAlert: Bool = false
+	//@Published var showAlert: Bool = false
 	@Published var id: String
 	@Published var email: String
 	@Published var phone: String?
@@ -32,7 +32,7 @@ class CandidateDetailsViewModel: ObservableObject {
 	@Published var note: String?
 	@Published var firstName: String
 	@Published var lastName: String
-	@Published var errorMessage: String? = ""
+	//@Published var errorMessage: String? = ""
 	@Published var isFavorite: Bool
 	
 	//MARK: -Inputs
@@ -48,7 +48,6 @@ class CandidateDetailsViewModel: ObservableObject {
 	func fetchCandidateDetails() async {
 		do {
 			let candidate = try await repository.fetchCandidateDetails(id: candidateID)
-			//self.candidate = candidate
 			self.firstName = candidate.firstName
 			self.lastName = candidate.lastName
 			self.email = candidate.email
@@ -56,12 +55,8 @@ class CandidateDetailsViewModel: ObservableObject {
 			self.linkedinURL = candidate.linkedinURL
 			self.note = candidate.note
 			self.isFavorite = candidate.isFavorite
-		} catch let error as VitesseKeychainService.KeychainError {
-			errorMessage = error.errorKeychainDescription
-		} catch let error as APIError {
-			errorMessage = error.errorDescription
 		} catch {
-			errorMessage = "Une erreur inconnue est survenue : \(error.localizedDescription)"
+			self.handleError(error)
 		}
 	}
 	
@@ -69,12 +64,8 @@ class CandidateDetailsViewModel: ObservableObject {
 	func updateCandidate() async {
 		do {
 			_ = try await repository.updateCandidate(id: id, email: email, note: note, linkedinURL: linkedinURL, firstName: firstName, lastName: lastName, phone: phone)
-		} catch let error as VitesseKeychainService.KeychainError {
-			errorMessage = error.errorKeychainDescription
-		} catch let error as APIError {
-			errorMessage = error.errorDescription
 		} catch {
-			errorMessage = "Une erreur inconnue est survenue : \(error.localizedDescription)"
+			self.handleError(error)
 		}
 	}
 	
@@ -85,14 +76,8 @@ class CandidateDetailsViewModel: ObservableObject {
 		do {
 			let updatedCandidate = try await repository.addCandidateToFavorites(id: id)
 			self.isFavorite = updatedCandidate.isFavorite //affecte la valeur à la propriété
-		} catch let error as VitesseKeychainService.KeychainError {
-			errorMessage = error.errorKeychainDescription
-		} catch let error as APIError {
-			errorMessage = error.errorDescription
-			showAlert = true
 		} catch {
-			errorMessage = "Une erreur inconnue est survenue : \(error.localizedDescription)"
-			showAlert = true
+			self.handleError(error)
 		}
 	}
 }

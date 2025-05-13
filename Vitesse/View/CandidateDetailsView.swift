@@ -222,8 +222,10 @@ struct CandidateDetailsView: View {
 			.font(.custom("Roboto_SemiCondensed-Light", size: 18))
 			.navigationBarBackButtonHidden(true)
 			.background(Color("AppSecondaryColor"))
+			.alert(isPresented: $viewModel.showAlert) {
+				Alert(title: Text("Error"), message: Text(viewModel.errorMessage ?? ""), dismissButton: .default(Text("OK")))
+			}
 		}
-	
 }
 
 /*#Preview {

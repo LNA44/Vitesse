@@ -8,9 +8,9 @@
 import SwiftUI
 
 struct RawCandidatesListView: View {
-	let editing: Bool //suite editing de la vue parent
+	let editing: Bool
 	let candidate: Candidate
-	@StateObject var viewModel: CandidatesListViewModel //transofmrer en ObservedObject
+	@ObservedObject var viewModel: CandidatesListViewModel
 	
     var body: some View {
 		if editing == false {

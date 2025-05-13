@@ -7,7 +7,7 @@
 
 import Foundation
 
-class CandidatesListViewModel: ObservableObject {
+class CandidatesListViewModel: BaseViewModel {
 	//MARK: -Private properties
 	private let repository: VitesseCandidateRepository
 
@@ -17,7 +17,7 @@ class CandidatesListViewModel: ObservableObject {
 	}
 	
 	//MARK: -Outputs
-	@Published var showAlert: Bool = false
+	//@Published var showAlert: Bool = false
 	@Published var searchText: String = "" {
 		didSet { //filtre réappliqué à chaque changement d'état de searchText
 			applyFilters(filterFavorites: filterFavorites, filterName: searchText)
@@ -28,7 +28,7 @@ class CandidatesListViewModel: ObservableObject {
 			applyFilters(filterFavorites: filterFavorites, filterName: searchText)
 		}
 	}
-	@Published var errorMessage: String? = nil
+	//@Published var errorMessage: String? = nil
 	@Published var selectedCandidates: [UUID] = []
 	@Published var filterFavorites: Bool = false {
 		didSet { //filtre réappliqué à chaque changement d'état de filterFavorites
@@ -44,12 +44,8 @@ class CandidatesListViewModel: ObservableObject {
 		do {
 			let candidates = try await repository.fetchCandidates()
 			self.candidates = candidates
-		} catch let error as VitesseKeychainService.KeychainError {
-			errorMessage = error.errorKeychainDescription
-		} catch let error as APIError {
-			errorMessage = error.errorDescription
 		} catch {
-			errorMessage = "Une erreur inconnue est survenue : \(error.localizedDescription)"
+			self.handleError(error)
 		}
 	}
 	
@@ -57,14 +53,8 @@ class CandidatesListViewModel: ObservableObject {
 	func deleteCandidate(id: String) async {
 		do {
 			_ = try await repository.deleteCandidate(id: id)
-		} catch let error as VitesseKeychainService.KeychainError {
-			errorMessage = error.errorKeychainDescription
-		} catch let error as APIError {
-			errorMessage = error.errorDescription
-			showAlert = true
 		} catch {
-			errorMessage = "Une erreur inconnue est survenue : \(error.localizedDescription)"
-			showAlert = true
+			self.handleError(error)
 		}
 	}
 	

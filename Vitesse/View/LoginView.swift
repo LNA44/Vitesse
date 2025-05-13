@@ -99,8 +99,8 @@ struct LoginView: View {
 				}
 				.padding(60)
 				.navigationBarBackButtonHidden(true)
-				.alert(isPresented: $viewModel.showingAlert) {
-					Alert(title: Text("Identifiant et mot de passe non reconnus"), message: Text(viewModel.errorMessage ?? ""), dismissButton: .default(Text("OK")))
+				.alert(isPresented: $viewModel.showAlert) {
+					Alert(title: Text("Error"), message: Text(viewModel.errorMessage ?? ""), dismissButton: .default(Text("OK")))
 				}
 				if showRegisteredNotification {
 					VStack {
