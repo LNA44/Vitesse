@@ -67,6 +67,7 @@ class VitesseAPIService {
 	//requête
 	func createRequest(parameters: [String: Any]? = nil, jsonData: Data?, endpoint: URL, method: Method) -> URLRequest { //modif parametersNeeded -> parameters
 		var request = URLRequest(url: endpoint)
+		request.timeoutInterval = 5 // délai max d'attente de 10 secondes
 		request.httpMethod = method.rawValue
 		if parameters != nil {
 			request.setValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -86,7 +87,7 @@ class VitesseAPIService {
 		guard let httpResponse = response as? HTTPURLResponse else {
 			throw APIError.invalidResponse
 		}
-		guard httpResponse.statusCode == 429 else {
+		if httpResponse.statusCode == 429 {
 			throw APIError.tooManyRequests
 		}
 		guard httpResponse.statusCode == 200 else {
