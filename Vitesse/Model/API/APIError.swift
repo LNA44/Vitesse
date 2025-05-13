@@ -14,6 +14,7 @@ enum APIError: LocalizedError, Equatable {
 	case httpError(statusCode: Int)
 	case noData
 	case decodingError
+	case tooManyRequests
 
 	var errorDescription: String? {
 		switch self {
@@ -29,6 +30,8 @@ enum APIError: LocalizedError, Equatable {
 			return "No data received from the server."
 		case .decodingError:
 			return "Decoding error."
+		case .tooManyRequests:
+			return "Too many requests."
 		}
 	}
 }

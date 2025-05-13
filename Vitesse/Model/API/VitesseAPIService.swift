@@ -86,6 +86,9 @@ class VitesseAPIService {
 		guard let httpResponse = response as? HTTPURLResponse else {
 			throw APIError.invalidResponse
 		}
+		guard httpResponse.statusCode == 429 else {
+			throw APIError.tooManyRequests
+		}
 		guard httpResponse.statusCode == 200 else {
 			throw APIError.httpError(statusCode: httpResponse.statusCode)
 		}
