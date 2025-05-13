@@ -12,6 +12,4 @@ class VitesseAppViewModel: ObservableObject {
 	@Published var isAdmin: Bool = false
 	@Published var showAlert: Bool = false
 	@Published var errorMessage: String?
-	
-	//MARK: - Initialisation	
 }

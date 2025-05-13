@@ -10,25 +10,21 @@ import Foundation
 class CandidateDetailsViewModel: ObservableObject {
 	//MARK: -Private properties
 	private let repository: VitesseCandidateRepository
+	private let candidateID: String
 
 	//MARK: -Initialisation
-	init(repository: VitesseCandidateRepository, candidate: Candidate, id: String, email: String, phone: String?, linkedinURL: String?, note: String?, firstName: String, lastName: String, isFavorite: Bool) {
+	init(repository: VitesseCandidateRepository, candidateID: String) {
 		self.repository = repository
-		self.candidate = candidate
-		self.id = id
-		self.email = email
-		self.phone = phone
-		self.linkedinURL = linkedinURL
-		self.note = note
-		self.firstName = firstName
-		self.lastName = lastName
-		self.phone  = phone
-		self.isFavorite = isFavorite
+		self.candidateID = candidateID
+		self.id = candidateID
+		self.email = ""
+		self.firstName = ""
+		self.lastName = ""
+		self.isFavorite = false
 	}
 	
 	//MARK: -Outputs
 	@Published var showAlert: Bool = false
-	@Published var candidate: Candidate
 	@Published var id: String
 	@Published var email: String
 	@Published var phone: String?
@@ -47,16 +43,30 @@ class CandidateDetailsViewModel: ObservableObject {
 		}
 		return validUrl
 	}
+
+	@MainActor
+	func fetchCandidateDetails() async {
+		do {
+			let candidate = try await repository.fetchCandidateDetails(id: candidateID)
+			//self.candidate = candidate
+			self.firstName = candidate.firstName
+			self.lastName = candidate.lastName
+			self.email = candidate.email
+			self.phone = candidate.phone
+			self.linkedinURL = candidate.linkedinURL
+			self.note = candidate.note
+			self.isFavorite = candidate.isFavorite
+		} catch let error as VitesseKeychainService.KeychainError {
+			errorMessage = error.errorKeychainDescription
+		} catch let error as APIError {
+			errorMessage = error.errorDescription
+		} catch {
+			errorMessage = "Une erreur inconnue est survenue : \(error.localizedDescription)"
+		}
+	}
 	
 	@MainActor
 	func updateCandidate() async {
-		candidate.id = id
-		candidate.firstName = firstName
-		candidate.lastName = lastName
-		candidate.email = email
-		candidate.note = note
-		candidate.linkedinURL = linkedinURL
-		candidate.phone = phone
 		do {
 			_ = try await repository.updateCandidate(id: id, email: email, note: note, linkedinURL: linkedinURL, firstName: firstName, lastName: lastName, phone: phone)
 		} catch let error as VitesseKeychainService.KeychainError {
@@ -73,8 +83,7 @@ class CandidateDetailsViewModel: ObservableObject {
 	func toggleFavorite() async {
 		// Inverse l'état de isFavorite dans le backend
 		do {
-			let updatedCandidate = try await repository.addCandidateToFavorites(id: candidate.id)
-			self.candidate = updatedCandidate
+			let updatedCandidate = try await repository.addCandidateToFavorites(id: id)
 			self.isFavorite = updatedCandidate.isFavorite //affecte la valeur à la propriété
 		} catch let error as VitesseKeychainService.KeychainError {
 			errorMessage = error.errorKeychainDescription

@@ -12,13 +12,11 @@ struct CandidateDetailsView: View {
 	@State var editing: Bool = false
 	@State var essaiEntryField = "0658392874"
 	@Environment(\.dismiss) var dismiss // On accède à l'environnement pour fermer la vue
-	var candidate: Candidate
 	
-	init(candidate: Candidate) {
+	init(candidateID: String) {
 		let keychain = VitesseKeychainService()
 		let repository = VitesseCandidateRepository(keychain: keychain)
-		_viewModel = StateObject(wrappedValue: CandidateDetailsViewModel(repository: repository, candidate: candidate, id: candidate.id, email: candidate.email, phone: candidate.phone, linkedinURL: candidate.linkedinURL, note: candidate.note, firstName: candidate.firstName, lastName: candidate.lastName, isFavorite: candidate.isFavorite)) // Injection du repository dans le viewModel
-		self.candidate = candidate
+		_viewModel = StateObject(wrappedValue: CandidateDetailsViewModel(repository: repository, candidateID: candidateID)) // Injection du repository dans le viewModel
 	}
 	
 	var body: some View {
@@ -177,8 +175,9 @@ struct CandidateDetailsView: View {
 					.font(.custom("Roboto_SemiCondensed-Light", size: 16))
 				}
 			}.onAppear {
-				// Met à jour le candidat sélectionné dans le VM
-				viewModel.candidate = candidate
+				Task {
+					await viewModel.fetchCandidateDetails()
+				}
 			}
 			.toolbar {
 				if editing == false {
@@ -215,8 +214,8 @@ struct CandidateDetailsView: View {
 							Text("Done")
 						}
 						.foregroundColor(Color("AppAccentColor"))
-						.disabled(candidate.email.isEmpty) // Désactive le bouton si l'email est vide
-						.opacity(candidate.email.isEmpty ? 0.5 : 1.0) // Rend le bouton plus opaque si l'email est vide
+						.disabled(viewModel.email.isEmpty) // Désactive le bouton si l'email est vide
+						.opacity(viewModel.email.isEmpty ? 0.5 : 1.0) // Rend le bouton plus opaque si l'email est vide
 					}
 				}
 			}

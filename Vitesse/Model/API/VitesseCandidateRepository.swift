@@ -37,13 +37,11 @@ struct VitesseCandidateRepository {
 		
 	}
 	
-	/*func fetchCandidateDetails(id: String) async throws -> Candidate {
+	func fetchCandidateDetails(id: String) async throws -> Candidate {
 		let endpoint = try APIService.createEndpoint(path: .fetchOrUpdateOrDeleteCandidateWithID(id: id))
 		var request = APIService.createRequest(jsonData: nil, endpoint: endpoint, method: .get)
 		
-		guard let token = keychain.getToken(key: "authToken") else {
-			throw APIError.unauthorized
-		}
+		let token = try keychain.getToken(key: "authToken") 
 		
 		request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
 		
@@ -54,7 +52,7 @@ struct VitesseCandidateRepository {
 		}
 		
 		return unwrappedCandidate
-	}*/
+	}
 	
 	func addCandidate(email: String, firstName: String, lastName: String) async throws -> Bool {
 		let endpoint = try APIService.createEndpoint(path: .fetchCandidatesOrAddCandidate)

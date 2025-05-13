@@ -31,7 +31,7 @@ struct CandidatesListView: View {
 						RawCandidatesListView(editing: editing, candidate: candidate, viewModel: viewModel)
 							.frame(maxWidth: .infinity, alignment: .leading)
 						if editing == false { //éviter de naviguer vers vue suivante en mode édition
-							NavigationLink (destination: CandidateDetailsView(candidate: candidate)) {
+							NavigationLink (destination: CandidateDetailsView(candidateID: candidate.id)) {
 							}
 						}
 					}
