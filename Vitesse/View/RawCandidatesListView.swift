@@ -12,7 +12,7 @@ struct RawCandidatesListView: View {
 	let candidate: Candidate
 	@ObservedObject var viewModel: CandidatesListViewModel
 	
-    var body: some View {
+	var body: some View {
 		if editing == false {
 			HStack {
 				Text("\(candidate.firstName) \(candidate.lastName)")
@@ -28,12 +28,12 @@ struct RawCandidatesListView: View {
 					Image(systemName: viewModel.selectedCandidates.contains(candidate.idUUID) ? "checkmark.circle.fill" : "circle")
 						.foregroundColor(Color("AppAccentColor"))
 				}
-
+				
 				Text("\(candidate.firstName) \(candidate.lastName)")
 					.font(.custom("Roboto_SemiCondensed-Light", size: 18))
 				Spacer()
 				candidate.isFavorite ? Image(systemName: "star.fill") : Image(systemName: "star")
 			}
 		}
-    }
+	}
 }

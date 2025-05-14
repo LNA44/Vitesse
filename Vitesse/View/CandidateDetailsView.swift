@@ -100,7 +100,6 @@ struct CandidateDetailsView: View {
 						}
 						.disabled(!editing)  // Désactive le TextEditor en mode lecture seule
 					}
-					
 					Spacer()
 				}
 				.padding(.top, 10)

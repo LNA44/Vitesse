@@ -15,7 +15,7 @@ struct EntryFieldView: View {
 	
 	@FocusState private var isFocused: Bool //définit si champ actif ou non, pour animations
 	
-    var body: some View {
+	var body: some View {
 		VStack(alignment:.leading) {
 			HStack {
 				if isSecure {
@@ -47,5 +47,5 @@ struct EntryFieldView: View {
 				.font(.custom("Roboto_SemiCondensed-Light", size: 10))
 				.font(.caption)
 		}
-    }
+	}
 }

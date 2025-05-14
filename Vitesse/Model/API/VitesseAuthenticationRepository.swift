@@ -59,6 +59,4 @@ struct VitesseAuthenticationRepository {
 		
 		return true
 	}
-	
-	
 }

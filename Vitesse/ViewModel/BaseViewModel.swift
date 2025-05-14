@@ -10,7 +10,7 @@ import Foundation
 class BaseViewModel: ObservableObject {
 	@Published var errorMessage: String? = ""
 	@Published var showAlert: Bool = false
-
+	
 	func handleError(_ error: Error) {
 		if let keychainError = error as? VitesseKeychainService.KeychainError {
 			errorMessage = keychainError.errorKeychainDescription

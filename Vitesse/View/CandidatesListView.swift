@@ -13,7 +13,7 @@ struct CandidatesListView: View {
 	init() {
 		let keychain = VitesseKeychainService()
 		let repository = VitesseCandidateRepository(keychain: keychain)
-		_viewModel = StateObject(wrappedValue: CandidatesListViewModel(repository: repository)) // Injection du repository dans le viewModel
+		_viewModel = StateObject(wrappedValue: CandidatesListViewModel(repository: repository)) 
 	}
 	
 	var body: some View {
@@ -24,7 +24,7 @@ struct CandidatesListView: View {
 				.background(Color.white)
 				.frame(height: 70)
 				.padding(.horizontal, 10)
-				
+			
 			List {
 				ForEach(viewModel.filteredNameCandidates, id: \.idUUID) { candidate in
 					ZStack {
@@ -61,10 +61,10 @@ struct CandidatesListView: View {
 				}
 				
 				ToolbarItem(placement: .principal) {
-						Text("Candidats")
-							.font(.custom("Roboto_Condensed-Italic", size: 20))
-							.foregroundColor(.black)
-					}
+					Text("Candidats")
+						.font(.custom("Roboto_Condensed-Italic", size: 20))
+						.foregroundColor(.black)
+				}
 				
 				ToolbarItem(placement: .navigationBarTrailing) {
 					Image(systemName: viewModel.filterFavorites ? "star.fill" : "star")
@@ -82,10 +82,10 @@ struct CandidatesListView: View {
 				}
 				
 				ToolbarItem(placement: .principal) {
-						Text("Candidats")
-							.font(.custom("Roboto_Condensed-Italic", size: 20))
-							.foregroundColor(.black) 
-					}
+					Text("Candidats")
+						.font(.custom("Roboto_Condensed-Italic", size: 20))
+						.foregroundColor(.black) 
+				}
 				
 				ToolbarItem(placement: .navigationBarTrailing) {
 					Button("Delete") {
@@ -109,27 +109,27 @@ struct CandidatesListView: View {
 }
 
 /*struct CandidatesListView_Previews: PreviewProvider {
-	static var previews: some View {
-		// Crée un mock de viewModel pour éviter les appels réseau
-		let mockViewModel = CandidatesListViewModel(repository: VitesseCandidateRepository(keychain: VitesseKeychainService()))
-		mockViewModel.candidates = [
-		Candidate(
-				phone: "1234567890",
-				note: "Technicien de réseau",
-				id: "1",
-				firstName: "John",
-				linkedinURL: "https://www.linkedin.com/in/johndoe",
-				isFavorite: true,
-				email: "john.doe@example.com",
-				lastName: "Doe",
-			),
-		Candidate(id: "2", firstName: "Jane", lastName: "Doe", phone: "9876543210", email: "jane.doe@example.com", isFavorite: false)
-		]
-		
-		// Retourne la vue avec ce mock
-		NavigationStack {
-			CandidatesListView()
-				.environmentObject(mockViewModel)
-		}
-	}
-}*/
+ static var previews: some View {
+ // Crée un mock de viewModel pour éviter les appels réseau
+ let mockViewModel = CandidatesListViewModel(repository: VitesseCandidateRepository(keychain: VitesseKeychainService()))
+ mockViewModel.candidates = [
+ Candidate(
+ phone: "1234567890",
+ note: "Technicien de réseau",
+ id: "1",
+ firstName: "John",
+ linkedinURL: "https://www.linkedin.com/in/johndoe",
+ isFavorite: true,
+ email: "john.doe@example.com",
+ lastName: "Doe",
+ ),
+ Candidate(id: "2", firstName: "Jane", lastName: "Doe", phone: "9876543210", email: "jane.doe@example.com", isFavorite: false)
+ ]
+ 
+ // Retourne la vue avec ce mock
+ NavigationStack {
+ CandidatesListView()
+ .environmentObject(mockViewModel)
+ }
+ }
+ }*/

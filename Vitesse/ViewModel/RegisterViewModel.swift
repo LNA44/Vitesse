@@ -24,7 +24,6 @@ class RegisterViewModel: BaseViewModel {
 	@Published var confirmPassword: String = ""
 	@Published var firstName: String = ""
 	@Published var lastName: String = ""
-	//@Published var errorMessage: String?
 	@Published var transferMessage: String = ""
 	
 	var isSignUpComplete: Bool {
@@ -68,7 +67,7 @@ class RegisterViewModel: BaseViewModel {
 		}
 		return "Passwords are different"
 	}
-
+	
 	//MARK: -Inputs
 	@MainActor
 	func addUser() async {
@@ -109,8 +108,8 @@ class RegisterViewModel: BaseViewModel {
 		// criterias here : http://regexlib.com
 		let emailTest = NSPredicate(format: "SELF MATCHES %@", Constantes.Regex.email)
 		/*Caractères précédants le @: 1 caractère alphanumérique (chiffre ou lettre), tiret point et underscores ok si suivies d'un caractère alphanumérique
-		Caractères suivants le @: 1 ou plusieurs caractères alphanumériques et tirets ou underscores (domaine de l'email)
-		Caractères après le point : entre 2 et 9 lettres (domaine de premier niveau : .com, .org,...)*/
+		 Caractères suivants le @: 1 ou plusieurs caractères alphanumériques et tirets ou underscores (domaine de l'email)
+		 Caractères après le point : entre 2 et 9 lettres (domaine de premier niveau : .com, .org,...)*/
 		return emailTest.evaluate(with: email)
 	}
 	

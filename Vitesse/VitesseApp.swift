@@ -13,11 +13,11 @@ struct VitesseApp: App {
 	private let keychain = VitesseKeychainService()
 	@State private var showAccountCreatedMessage = false
 	@Environment(\.scenePhase) private var scenePhase  // Observe l'état de l'application (active, background, inactive)
-
+	
 	init() {}
 	
-    var body: some Scene {
-        WindowGroup {
+	var body: some Scene {
+		WindowGroup {
 			LoginView(showAccountCreatedMessage: $showAccountCreatedMessage)
 				.alert(isPresented: $viewModel.showAlert) {
 					Alert(
@@ -26,7 +26,7 @@ struct VitesseApp: App {
 						dismissButton: .default(Text("OK"))
 					)
 				}
-        }
+		}
 		.onChange(of: scenePhase) {
 			switch scenePhase {
 			case .background, .active:
@@ -41,5 +41,5 @@ struct VitesseApp: App {
 				break
 			}
 		}
-    }
+	}
 }

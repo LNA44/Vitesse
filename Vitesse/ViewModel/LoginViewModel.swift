@@ -15,16 +15,12 @@ class LoginViewModel: BaseViewModel {
 	//MARK: -Initialisation
 	init(repository: VitesseAuthenticationRepository) {
 		self.repository = repository
-		//self.onLoginSucceed = callback
 	}
 	
 	//MARK: -Ouputs
 	@Published var email: String = ""
 	@Published var password: String = ""
 	@Published var isAdmin: Bool = false
-	//@Published var errorMessage: String? = nil
-	//@Published var showingAlert: Bool = false
-	//var onLoginSucceed: ((Bool, Bool) -> Void)  // Callback avec isLogged et isAdmin
 	
 	var isSignUpComplete: Bool {
 		if !isPasswordValid() || !isEmailValid() {
@@ -70,8 +66,8 @@ class LoginViewModel: BaseViewModel {
 		// criterias here : http://regexlib.com
 		let emailTest = NSPredicate(format: "SELF MATCHES %@", Constantes.Regex.email)
 		/*Caractères précédants le @: 1 caractère alphanumérique (chiffre ou lettre), tiret point et underscores ok si suivies d'un caractère alphanumérique
-		Caractères suivants le @: 1 ou plusieurs caractères alphanumériques et tirets ou underscores (domaine de l'email)
-		Caractères après le point : entre 2 et 9 lettres (domaine de premier niveau : .com, .org,...)*/
+		 Caractères suivants le @: 1 ou plusieurs caractères alphanumériques et tirets ou underscores (domaine de l'email)
+		 Caractères après le point : entre 2 et 9 lettres (domaine de premier niveau : .com, .org,...)*/
 		return emailTest.evaluate(with: email)
 	}
 }

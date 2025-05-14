@@ -10,14 +10,13 @@ import Foundation
 class CandidatesListViewModel: BaseViewModel {
 	//MARK: -Private properties
 	private let repository: VitesseCandidateRepository
-
+	
 	//MARK: -Initialisation
 	init(repository: VitesseCandidateRepository) {
 		self.repository = repository
 	}
 	
 	//MARK: -Outputs
-	//@Published var showAlert: Bool = false
 	@Published var searchText: String = "" {
 		didSet { //filtre réappliqué à chaque changement d'état de searchText
 			applyFilters(filterFavorites: filterFavorites, filterName: searchText)
@@ -28,7 +27,6 @@ class CandidatesListViewModel: BaseViewModel {
 			applyFilters(filterFavorites: filterFavorites, filterName: searchText)
 		}
 	}
-	//@Published var errorMessage: String? = nil
 	@Published var selectedCandidates: [UUID] = []
 	@Published var filterFavorites: Bool = false {
 		didSet { //filtre réappliqué à chaque changement d'état de filterFavorites

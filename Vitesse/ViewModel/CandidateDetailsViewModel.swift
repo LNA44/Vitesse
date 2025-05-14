@@ -11,7 +11,7 @@ class CandidateDetailsViewModel: BaseViewModel {
 	//MARK: -Private properties
 	private let repository: VitesseCandidateRepository
 	private let candidateID: String
-
+	
 	//MARK: -Initialisation
 	init(repository: VitesseCandidateRepository, candidateID: String) {
 		self.repository = repository
@@ -24,7 +24,6 @@ class CandidateDetailsViewModel: BaseViewModel {
 	}
 	
 	//MARK: -Outputs
-	//@Published var showAlert: Bool = false
 	@Published var id: String
 	@Published var email: String
 	@Published var phone: String?
@@ -32,7 +31,6 @@ class CandidateDetailsViewModel: BaseViewModel {
 	@Published var note: String?
 	@Published var firstName: String
 	@Published var lastName: String
-	//@Published var errorMessage: String? = ""
 	@Published var isFavorite: Bool
 	
 	//MARK: -Inputs
@@ -43,7 +41,7 @@ class CandidateDetailsViewModel: BaseViewModel {
 		}
 		return validUrl
 	}
-
+	
 	@MainActor
 	func fetchCandidateDetails() async {
 		do {

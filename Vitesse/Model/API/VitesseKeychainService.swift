@@ -29,7 +29,7 @@ class VitesseKeychainService: ObservableObject {
 			}
 		}
 	}
-		
+	
 	func saveToken(token: String, key: String) throws -> Bool {
 		
 		var query: [String: Any] = [
@@ -39,7 +39,7 @@ class VitesseKeychainService: ObservableObject {
 		]
 		let tokenData = token.data(using: .utf8)!
 		query[kSecValueData as String] = tokenData
-
+		
 		// Tente de récupérer l'élément du Keychain
 		var existingItem: CFTypeRef?
 		let status: OSStatus = SecItemCopyMatching(query as CFDictionary, &existingItem)
@@ -49,11 +49,11 @@ class VitesseKeychainService: ObservableObject {
 		}
 		
 		// Tente d'ajouter l'élément au Keychain
-			let addStatus: OSStatus = SecItemAdd(query as CFDictionary, nil)
-			guard addStatus == errSecSuccess else { //si update echoue on lance erreur
-				throw KeychainError.unexpectedStatus(addStatus)
-			}
-			return true
+		let addStatus: OSStatus = SecItemAdd(query as CFDictionary, nil)
+		guard addStatus == errSecSuccess else { //si update echoue on lance erreur
+			throw KeychainError.unexpectedStatus(addStatus)
+		}
+		return true
 	}
 	
 	func getToken(key: String) throws -> String {
@@ -67,7 +67,7 @@ class VitesseKeychainService: ObservableObject {
 		
 		var item: CFTypeRef?
 		let status: OSStatus = SecItemCopyMatching(query as CFDictionary, &item)
-
+		
 		guard status != errSecItemNotFound else {
 			throw KeychainError.itemNotFound
 		}

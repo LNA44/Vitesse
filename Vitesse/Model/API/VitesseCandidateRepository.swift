@@ -26,7 +26,7 @@ struct VitesseCandidateRepository {
 		let token = try keychain.getToken(key: Constantes.Candidate.tokenKey)
 		
 		request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-
+		
 		let candidates = try await APIService.fetchAndDecode([Candidate].self, request: request)
 		
 		guard let unwrappedCandidates = candidates else {
@@ -34,7 +34,6 @@ struct VitesseCandidateRepository {
 		}
 		
 		return unwrappedCandidates
-		
 	}
 	
 	func fetchCandidateDetails(id: String) async throws -> Candidate {

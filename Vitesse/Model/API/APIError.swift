@@ -15,7 +15,7 @@ enum APIError: LocalizedError, Equatable {
 	case noData
 	case decodingError
 	case tooManyRequests
-
+	
 	var errorDescription: String? {
 		switch self {
 		case .invalidURL:
