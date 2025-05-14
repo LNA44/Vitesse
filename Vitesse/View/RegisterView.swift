@@ -101,6 +101,6 @@ struct RegisterView: View {
 		}
 	}
 }
-//#Preview {
-//	RegisterView(viewModel: RegisterViewModel(repository: VitesseService(keychain)))
-//}
+#Preview {
+	RegisterView()
+}

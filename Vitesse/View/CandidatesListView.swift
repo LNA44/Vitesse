@@ -108,6 +108,28 @@ struct CandidatesListView: View {
 	}
 }
 
-#Preview {
-	CandidatesListView()
-}
+/*struct CandidatesListView_Previews: PreviewProvider {
+	static var previews: some View {
+		// Crée un mock de viewModel pour éviter les appels réseau
+		let mockViewModel = CandidatesListViewModel(repository: VitesseCandidateRepository(keychain: VitesseKeychainService()))
+		mockViewModel.candidates = [
+		Candidate(
+				phone: "1234567890",
+				note: "Technicien de réseau",
+				id: "1",
+				firstName: "John",
+				linkedinURL: "https://www.linkedin.com/in/johndoe",
+				isFavorite: true,
+				email: "john.doe@example.com",
+				lastName: "Doe",
+			),
+		Candidate(id: "2", firstName: "Jane", lastName: "Doe", phone: "9876543210", email: "jane.doe@example.com", isFavorite: false)
+		]
+		
+		// Retourne la vue avec ce mock
+		NavigationStack {
+			CandidatesListView()
+				.environmentObject(mockViewModel)
+		}
+	}
+}*/

@@ -131,7 +131,11 @@ struct LoginView: View {
 	}
 }
 
-/*#Preview {
-	LoginView()
+struct LoginView_Previews: PreviewProvider {
+	@State static var showAccountCreatedMessage = false
+
+	static var previews: some View {
+		LoginView(showAccountCreatedMessage: $showAccountCreatedMessage)
+	}
 }
-*/
+

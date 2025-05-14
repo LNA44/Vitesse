@@ -36,26 +36,4 @@ struct RawCandidatesListView: View {
 			}
 		}
     }
-	
 }
-
-/*#Preview {
-	let simulatedAPIResponse =
-	
-	// Convertit en un objet de type Candidate
-	let simulatedCandidate = Candidate(candidate: simulatedAPIResponse)
-	RawCandidatesListView(editing: true, candidate: simulatedCandidate)
-}*/
-/*#Preview {
-	RawCandidatesListView(editing: false, candidate: Candidate(candidate: Candidate(
-		phone: "123-456-7890",
-		note: "Experienced iOS Developer",
-		id: "12345",
-		firstName: "John",
-		linkedinURL: "https://www.linkedin.com/in/johndoe",
-		isFavorite: true,
-		email: "johndoe@example.com",
-		lastName: "Doe"
-		)))
-}
-*/
