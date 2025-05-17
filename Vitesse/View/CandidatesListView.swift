@@ -17,119 +17,100 @@ struct CandidatesListView: View {
 	}
 	
 	var body: some View {
-		VStack {
-			TextField("Search", text: $viewModel.searchText)
-				.padding()
-				.font(.custom("Roboto_SemiCondensed-Light", size: 18))
-				.background(Color.white)
-				.frame(height: 70)
-				.padding(.horizontal, 10)
-			
-			List {
-				ForEach(viewModel.filteredNameCandidates, id: \.idUUID) { candidate in
-					ZStack {
-						RawCandidatesListView(editing: editing, candidate: candidate, viewModel: viewModel)
-							.frame(maxWidth: .infinity, alignment: .leading)
-						if editing == false { //éviter de naviguer vers vue suivante en mode édition
-							NavigationLink (destination: CandidateDetailsView(candidateID: candidate.id)) {
+		ZStack {
+			GradientBackgroundView()
+			VStack {
+				TextField("Search", text: $viewModel.searchText)
+					.padding()
+					.font(.custom("Roboto_SemiCondensed-Light", size: 18))
+					.background(Color.white)
+					.frame(height: 70)
+					.padding(.horizontal, 10)
+				
+				List {
+					ForEach(viewModel.filteredNameCandidates, id: \.idUUID) { candidate in
+						ZStack {
+							RawCandidatesListView(editing: editing, candidate: candidate, viewModel: viewModel)
+								.frame(maxWidth: .infinity, alignment: .leading)
+							if editing == false { //éviter de naviguer vers vue suivante en mode édition
+								NavigationLink (destination: CandidateDetailsView(candidateID: candidate.id)) {
+								}
 							}
 						}
 					}
 				}
+				.listRowSpacing(15)
+				.listStyle(.plain)
 			}
-			.listRowSpacing(15)
-			.listStyle(.plain)
-		}
-		.navigationBarBackButtonHidden(true)
-		.navigationBarTitleDisplayMode(.inline)
-		.task {
-			await viewModel.fetchCandidates()
-		}
-		.alert(isPresented: $viewModel.showAlert) {
-			Alert(title: Text("Error"), message: Text(viewModel.errorMessage ?? ""), dismissButton: .default(Text("OK")))
-		}
-		
-		.toolbar {
-			if editing == false {
-				ToolbarItem(placement: .navigationBarLeading) {
-					Button(action: {
-						editing = true
-					}) {
-						Text("Edit")
-							.foregroundColor(Color("AppAccentColor"))
-					}
-				}
-				
-				ToolbarItem(placement: .principal) {
-					Text("Candidats")
-						.font(.custom("Roboto_Condensed-Italic", size: 20))
-						.foregroundColor(.black)
-				}
-				
-				ToolbarItem(placement: .navigationBarTrailing) {
-					Image(systemName: viewModel.filterFavorites ? "star.fill" : "star")
-						.foregroundColor(Color("AppAccentColor"))
-						.onTapGesture {
-							viewModel.filterFavorites.toggle()
+			.navigationBarBackButtonHidden(true)
+			.navigationBarTitleDisplayMode(.inline)
+			.task {
+				await viewModel.fetchCandidates()
+			}
+			.alert(isPresented: $viewModel.showAlert) {
+				Alert(title: Text("Error"), message: Text(viewModel.errorMessage ?? ""), dismissButton: .default(Text("OK")))
+			}
+			
+			.toolbar {
+				if editing == false {
+					ToolbarItem(placement: .navigationBarLeading) {
+						Button(action: {
+							editing = true
+						}) {
+							Text("Edit")
+								.foregroundColor(Color("AppAccentColor"))
 						}
-				}
-			} else {
-				ToolbarItem(placement: .navigationBarLeading) {
-					Button("Cancel") {
-						editing = false
 					}
-					.foregroundColor(Color("AppAccentColor"))
-				}
-				
-				ToolbarItem(placement: .principal) {
-					Text("Candidats")
-						.font(.custom("Roboto_Condensed-Italic", size: 20))
-						.foregroundColor(.black) 
-				}
-				
-				ToolbarItem(placement: .navigationBarTrailing) {
-					Button("Delete") {
-						Task {
-							for candidate in viewModel.selectedCandidates {
-								await viewModel.deleteCandidate(id: candidate.uuidString)
+					
+					ToolbarItem(placement: .principal) {
+						Text("Candidats")
+							.font(.custom("Roboto_Condensed-Italic", size: 20))
+							.foregroundColor(.black)
+					}
+					
+					ToolbarItem(placement: .navigationBarTrailing) {
+						Image(systemName: viewModel.filterFavorites ? "star.fill" : "star")
+							.foregroundColor(Color("AppAccentColor"))
+							.onTapGesture {
+								viewModel.filterFavorites.toggle()
 							}
-							viewModel.selectedCandidates.removeAll()
-							await viewModel.fetchCandidates()
+					}
+				} else {
+					ToolbarItem(placement: .navigationBarLeading) {
+						Button("Cancel") {
 							editing = false
 						}
+						.foregroundColor(Color("AppAccentColor"))
 					}
-					.disabled(viewModel.selectedCandidates.isEmpty)
-					.foregroundColor(Color("AppAccentColor"))
+					
+					ToolbarItem(placement: .principal) {
+						Text("Candidats")
+							.font(.custom("Roboto_Condensed-Italic", size: 20))
+							.foregroundColor(.black)
+					}
+					
+					ToolbarItem(placement: .navigationBarTrailing) {
+						Button("Delete") {
+							Task {
+								for candidate in viewModel.selectedCandidates {
+									await viewModel.deleteCandidate(id: candidate.uuidString)
+								}
+								viewModel.selectedCandidates.removeAll()
+								await viewModel.fetchCandidates()
+								editing = false
+							}
+						}
+						.disabled(viewModel.selectedCandidates.isEmpty)
+						.foregroundColor(Color("AppAccentColor"))
+					}
 				}
 			}
+			.font(.custom("Roboto_SemiCondensed-Light", size: 18))
 		}
-		.font(.custom("Roboto_SemiCondensed-Light", size: 18))
-		.background(Color("AppSecondaryColor"))
 	}
 }
 
-/*struct CandidatesListView_Previews: PreviewProvider {
- static var previews: some View {
- // Crée un mock de viewModel pour éviter les appels réseau
- let mockViewModel = CandidatesListViewModel(repository: VitesseCandidateRepository(keychain: VitesseKeychainService()))
- mockViewModel.candidates = [
- Candidate(
- phone: "1234567890",
- note: "Technicien de réseau",
- id: "1",
- firstName: "John",
- linkedinURL: "https://www.linkedin.com/in/johndoe",
- isFavorite: true,
- email: "john.doe@example.com",
- lastName: "Doe",
- ),
- Candidate(id: "2", firstName: "Jane", lastName: "Doe", phone: "9876543210", email: "jane.doe@example.com", isFavorite: false)
- ]
- 
- // Retourne la vue avec ce mock
- NavigationStack {
- CandidatesListView()
- .environmentObject(mockViewModel)
- }
- }
- }*/
+/*#Preview {
+	CandidatesListView(viewModel: AccountDetailViewModel(repository: AccountRepository(keychain: AuraKeychainService())))
+}
+*/

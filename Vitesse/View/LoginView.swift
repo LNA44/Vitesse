@@ -22,8 +22,7 @@ struct LoginView: View {
 	var body: some View {
 		NavigationStack {
 			ZStack {
-				Color("SecondaryColor")
-					.edgesIgnoringSafeArea(.all)
+				GradientBackgroundView()
 				
 				VStack(spacing: 10) {
 					Text("Login")
@@ -63,11 +62,11 @@ struct LoginView: View {
 								.frame(width: 100, height: 12)
 								.font(.custom("Roboto_SemiCondensed-Light", size: 22))
 								.padding()
-								.foregroundColor(Color("AppAccentColor"))
-								.background(Color.white)
+								.foregroundColor(Color.black)
+								.background(Color("AppPrimaryColor"))
 								.overlay(
 									Rectangle()
-										.stroke(Color("AppAccentColor"), lineWidth: 2)
+										.stroke(Color.black, lineWidth: 1)
 								)
 								.shadow(radius: 5)
 							
@@ -85,13 +84,12 @@ struct LoginView: View {
 							Text("Register")
 								.frame(width: 100, height: 12)
 								.font(.custom("Roboto_SemiCondensed-Light", size: 22))
-								.foregroundColor(Color("AppAccentColor"))
+								.foregroundColor(Color.black)
 								.padding()
-								.foregroundColor(.blue)
-								.background(Color.white)
+								.background(Color("AppPrimaryColor"))
 								.overlay(
 									Rectangle()
-										.stroke(Color("AppAccentColor"), lineWidth: 2)
+										.stroke(Color.black, lineWidth: 1)
 								)
 								.shadow(radius: 5)
 						}

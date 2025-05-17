@@ -12,7 +12,7 @@ struct VitesseApp: App {
 	@StateObject private var viewModel = VitesseAppViewModel()
 	private let keychain = VitesseKeychainService()
 	@State private var showAccountCreatedMessage = false
-	@Environment(\.scenePhase) private var scenePhase  // Observe l'état de l'application (active, background, inactive)
+	@Environment(\.scenePhase) private var scenePhase  
 	
 	init() {}
 	
@@ -31,7 +31,6 @@ struct VitesseApp: App {
 			switch scenePhase {
 			case .background, .active:
 				do {
-					// Supprime le token lorsque l'app passe en arrière-plan ou se lance
 					_ = try keychain.deleteToken(key: Constantes.Authentication.tokenKey)
 				} catch {
 					viewModel.showAlert = true

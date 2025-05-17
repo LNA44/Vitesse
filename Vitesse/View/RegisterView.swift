@@ -25,8 +25,7 @@ struct RegisterView: View {
 	
 	var body: some View {
 		ZStack {
-			Color("SecondaryColor")
-				.edgesIgnoringSafeArea(.all)
+			GradientBackgroundView()
 			
 			VStack {
 				Text("Register")
@@ -75,11 +74,11 @@ struct RegisterView: View {
 						.frame(width: 100, height: 12)
 						.font(.custom("Roboto_SemiCondensed-Light", size: 22))
 						.padding()
-						.foregroundColor(Color("AppAccentColor"))
-						.background(.white)
+						.foregroundColor(Color.black)
+						.background(Color("AppPrimaryColor"))
 						.overlay(
 							Rectangle()
-								.stroke(Color("AppAccentColor"), lineWidth: 2)
+								.stroke(Color.black, lineWidth: 1)
 						)
 						.shadow(radius: 5)
 				}
