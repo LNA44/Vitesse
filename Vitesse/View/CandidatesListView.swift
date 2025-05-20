@@ -110,7 +110,7 @@ struct CandidatesListView: View {
 	}
 }
 
-/*#Preview {
-	CandidatesListView(viewModel: AccountDetailViewModel(repository: AccountRepository(keychain: AuraKeychainService())))
+#Preview {
+	CandidatesListView()
 }
-*/
+
