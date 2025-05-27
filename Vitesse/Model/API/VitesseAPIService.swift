@@ -7,7 +7,7 @@
 
 import Foundation
 
-class VitesseAPIService {
+struct VitesseAPIService {
 	//MARK: -Private properties
 	private let session: URLSession
 	

@@ -16,7 +16,6 @@ class CandidateDetailsViewModel: BaseViewModel {
 	init(repository: VitesseCandidateRepository, candidateID: String) {
 		self.repository = repository
 		self.candidateID = candidateID
-		self.id = candidateID
 		self.email = ""
 		self.firstName = ""
 		self.lastName = ""
@@ -24,7 +23,6 @@ class CandidateDetailsViewModel: BaseViewModel {
 	}
 	
 	//MARK: -Outputs
-	@Published var id: String
 	@Published var email: String
 	@Published var phone: String?
 	@Published var linkedinURL: String?
@@ -61,7 +59,7 @@ class CandidateDetailsViewModel: BaseViewModel {
 	@MainActor
 	func updateCandidate() async {
 		do {
-			_ = try await repository.updateCandidate(id: id, email: email, note: note, linkedinURL: linkedinURL, firstName: firstName, lastName: lastName, phone: phone)
+			_ = try await repository.updateCandidate(id: candidateID, email: email, note: note, linkedinURL: linkedinURL, firstName: firstName, lastName: lastName, phone: phone)
 		} catch {
 			self.handleError(error)
 		}
@@ -72,7 +70,7 @@ class CandidateDetailsViewModel: BaseViewModel {
 	func toggleFavorite() async {
 		// Inverse l'état de isFavorite dans le backend
 		do {
-			let updatedCandidate = try await repository.addCandidateToFavorites(id: id)
+			let updatedCandidate = try await repository.addCandidateToFavorites(id: candidateID)
 			self.isFavorite = updatedCandidate.isFavorite //affecte la valeur à la propriété
 		} catch {
 			self.handleError(error)
