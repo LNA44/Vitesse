@@ -19,7 +19,7 @@ struct VitesseAPIService {
 	//MARK: -Enumerations
 	enum Path {
 		case login
-		case registrer
+		case register
 		case fetchCandidatesOrAddCandidate
 		case fetchOrUpdateOrDeleteCandidateWithID(id: String)
 		case candidateWithIDInFavorites(id: String)
@@ -29,7 +29,7 @@ struct VitesseAPIService {
 			switch self {
 			case .login:
 				return "/user/auth"
-			case .registrer:
+			case .register:
 				return "/user/register"
 			case .fetchCandidatesOrAddCandidate:
 				return "/candidate"
@@ -79,9 +79,9 @@ struct VitesseAPIService {
 	}
 	
 	//appel réseau
-	func fetch(request: URLRequest, allowEmptyData: Bool = false) async throws -> Data {
+	func fetch(request: URLRequest, allowEmptyData: Bool = false, allowStatusCode201: Bool = false) async throws -> Data {
 		let (data, response) = try await session.data(for: request)
-		
+		print("Response data as string: \(String(data: data, encoding: .utf8) ?? "nil")")
 		if !allowEmptyData && data.isEmpty {
 			throw APIError.noData
 		}
@@ -90,6 +90,10 @@ struct VitesseAPIService {
 		}
 		if httpResponse.statusCode == 429 {
 			throw APIError.tooManyRequests
+		}
+		
+		if allowStatusCode201 && httpResponse.statusCode == 201 {
+			return data
 		}
 		guard httpResponse.statusCode == 200 else {
 			throw APIError.httpError(statusCode: httpResponse.statusCode)

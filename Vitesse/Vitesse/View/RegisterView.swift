@@ -63,11 +63,13 @@ struct RegisterView: View {
 					.padding(.bottom, 40)
 				
 				Button(action: {
-					isNavigationActive = true
 					Task {
 						await viewModel.addUser()
 						await viewModel.addCandidate()
-						showAccountCreatedMessage = true
+						if viewModel.errorMessage == "" {
+							showAccountCreatedMessage = true
+							isNavigationActive = true
+						}
 					}
 				}) {
 					Text("Create")

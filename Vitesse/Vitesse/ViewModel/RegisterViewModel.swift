@@ -71,16 +71,19 @@ class RegisterViewModel: BaseViewModel {
 	//MARK: -Inputs
 	@MainActor
 	func addUser() async {
+		print("🔎 addUser called")
 		do {
 			_ = try await authRepository.register(email: email, password: password, firstName: firstName, lastName: lastName)
 			transferMessage = "Successfully registered"
 		} catch {
+			print("erreur dans addUser")
 			self.handleErrorWithoutKeychain(error)
 		}
 	}
 	
 	@MainActor
 	func addCandidate() async {
+		print("🔎 addUCandidate called")
 		do {
 			_ = try await authRepository.login(email: email, password: password) //permet de récupérer le token utile à addCandidate
 			_ = try await candidateRepository.addCandidate(email: email, firstName: firstName, lastName: lastName)

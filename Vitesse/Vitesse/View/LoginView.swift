@@ -10,7 +10,6 @@ struct LoginView: View {
 	@StateObject var viewModel: LoginViewModel
 	@State private var isNavigationActive = false //obligatoire car on ne peut pas mettre un bouton (action) dans une navigationlink
 	@Binding var showAccountCreatedMessage: Bool
-	@State private var showRegisteredNotification = false
 	
 	init(showAccountCreatedMessage: Binding<Bool>) {
 		let keychain = VitesseKeychainService()
@@ -100,7 +99,7 @@ struct LoginView: View {
 				.alert(isPresented: $viewModel.showAlert) {
 					Alert(title: Text("Error"), message: Text(viewModel.errorMessage ?? ""), dismissButton: .default(Text("OK")))
 				}
-				if showRegisteredNotification {
+				if showAccountCreatedMessage {
 					VStack {
 						Spacer()
 						Text("Account created successfully!")
@@ -114,16 +113,15 @@ struct LoginView: View {
 							.transition(.move(edge: .bottom))
 							.onAppear {
 								DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-									showRegisteredNotification = false
-									showAccountCreatedMessage = false 
+									// On remet à false après l'affichage
+									withAnimation {
+										showAccountCreatedMessage = false
+									}
 								}
 							}
 					}
 					.padding()
 				}
-			}
-			.onChange(of: showAccountCreatedMessage) {
-				showRegisteredNotification = true
 			}
 		}
 	}

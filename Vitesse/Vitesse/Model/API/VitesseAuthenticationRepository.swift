@@ -20,7 +20,7 @@ struct VitesseAuthenticationRepository {
 	}
 	
 	//MARK: -Methods
-	func login(email: String, password: String) async throws -> Bool {
+	func login(email: String, password: String) async throws {
 		let endpoint = try APIService.createEndpoint(path: .login)
 		
 		//body de la requete
@@ -32,18 +32,16 @@ struct VitesseAuthenticationRepository {
 		let jsonData = try APIService.serializeParameters(parameters: parameters)
 		let request = APIService.createRequest(parameters: parameters, jsonData: jsonData, endpoint: endpoint, method: .post)
 		let responseJSON = try await APIService.fetchAndDecode(VitesseLoginResponse.self, request: request)
-		
+		print("responseJSON: \(String(describing: responseJSON))")
 		guard let unwrappedResponseJSON = responseJSON else {
 			throw APIError.noData
 		}
 		//Stockage du token
 		_ = try keychain.saveToken(token: unwrappedResponseJSON.token, key: Constantes.Authentication.tokenKey)
-		
-		return isAdmin
 	}
 	
 	func register(email: String, password: String, firstName: String, lastName: String) async throws -> Bool {
-		let endpoint = try APIService.createEndpoint(path: .registrer)
+		let endpoint = try APIService.createEndpoint(path: .register)
 		
 		//body de la requete
 		let parameters: [String: Any] = [
@@ -55,7 +53,7 @@ struct VitesseAuthenticationRepository {
 		
 		let jsonData = try APIService.serializeParameters(parameters: parameters)
 		let request = APIService.createRequest(parameters: parameters, jsonData: jsonData, endpoint: endpoint, method: .post)
-		let _ = try await APIService.fetchAndDecode(Candidate.self, request: request)
+		_ = try await APIService.fetch(request: request, allowEmptyData: true, allowStatusCode201: true)
 		
 		return true
 	}

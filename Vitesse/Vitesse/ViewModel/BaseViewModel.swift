@@ -19,6 +19,7 @@ class BaseViewModel: ObservableObject {
 		} else {
 			errorMessage = "Unknown error happened : \(error.localizedDescription)"
 		}
+		print("⚠️ handleError triggered with message: \(errorMessage ?? "nil")")
 		showAlert = true
 	}
 	
