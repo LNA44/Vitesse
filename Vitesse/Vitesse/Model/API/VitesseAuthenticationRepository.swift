@@ -11,7 +11,7 @@ struct VitesseAuthenticationRepository {
 	//MARK: -Properties
 	private let keychain: VitesseKeychainService
 	private let APIService: VitesseAPIService
-	private var isAdmin: Bool = false
+	//private var isAdmin: Bool = false
 	
 	//MARK: -Initialization
 	init(keychain: VitesseKeychainService, APIService: VitesseAPIService = VitesseAPIService()) {
@@ -32,7 +32,7 @@ struct VitesseAuthenticationRepository {
 		let jsonData = try APIService.serializeParameters(parameters: parameters)
 		let request = APIService.createRequest(parameters: parameters, jsonData: jsonData, endpoint: endpoint, method: .post)
 		let responseJSON = try await APIService.fetchAndDecode(VitesseLoginResponse.self, request: request)
-		print("responseJSON: \(String(describing: responseJSON))")
+
 		guard let unwrappedResponseJSON = responseJSON else {
 			throw APIError.noData
 		}

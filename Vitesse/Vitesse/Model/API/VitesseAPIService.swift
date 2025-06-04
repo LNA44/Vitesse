@@ -81,7 +81,6 @@ struct VitesseAPIService {
 	//appel réseau
 	func fetch(request: URLRequest, allowEmptyData: Bool = false, allowStatusCode201: Bool = false) async throws -> Data {
 		let (data, response) = try await session.data(for: request)
-		print("Response data as string: \(String(data: data, encoding: .utf8) ?? "nil")")
 		if !allowEmptyData && data.isEmpty {
 			throw APIError.noData
 		}
