@@ -22,5 +22,5 @@ struct GradientBackgroundView: View {
 }
 
 #Preview {
-    GradientBackgroundView()
+	GradientBackgroundView()
 }

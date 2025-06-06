@@ -78,7 +78,7 @@ struct VitesseCandidateRepository {
 		guard let responseJSON = try await APIService.fetchAndDecode(Candidate.self, request: request) else {
 			throw APIError.noData
 		}
-
+		
 		return true
 	}
 	

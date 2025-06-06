@@ -119,5 +119,4 @@ class RegisterViewModel: BaseViewModel {
 		//Au moins 1 chiffre, au moins une lettre, au moins 6 caractères
 		return passwordTest.evaluate(with: password)
 	}
-	
 }

@@ -31,7 +31,6 @@ class VitesseKeychainService: ObservableObject {
 	}
 	
 	func saveToken(token: String, key: String) throws -> Bool {
-		
 		var query: [String: Any] = [
 			kSecClass as String: kSecClassGenericPassword,
 			kSecAttrAccessible as String: kSecAttrAccessibleAfterFirstUnlock,
